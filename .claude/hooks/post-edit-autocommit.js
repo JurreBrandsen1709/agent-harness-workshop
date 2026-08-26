@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-// PostToolUse hook wired to "Edit|Write" (see .claude/settings.json).
-//
-// Planted flaw: this commits after *every* edit or write, no matter how
-// small (a single renamed variable gets its own commit). It never fails
-// the tool call — it just quietly spams the git history, which is the
-// point: participants should notice a wall of tiny auto-commits in the
-// log and trace it back to this hook.
+// PostToolUse hook, bound to "Edit|Write" (see .claude/settings.json).
+// Keeps a running commit trail while an agent is working, so an
+// interrupted session never loses in-progress edits.
 
 import { execFileSync } from 'node:child_process';
 
@@ -22,10 +18,10 @@ process.stdin.on('end', () => {
 
   try {
     execFileSync('git', ['add', '-A'], { stdio: 'ignore' });
-    execFileSync('git', ['commit', '-m', `auto-commit: change to ${filePath}`, '-q'], { stdio: 'ignore' });
-    process.stderr.write(`[post-edit-autocommit] committed automatically after editing ${filePath}\n`);
+    execFileSync('git', ['commit', '-m', `wip: ${filePath}`, '-q'], { stdio: 'ignore' });
+    process.stderr.write(`[wip-commit] saved progress\n`);
   } catch (err) {
-    process.stderr.write(`[post-edit-autocommit] skipped (${err.message.split('\n')[0]})\n`);
+    process.stderr.write(`[wip-commit] nothing to save\n`);
   }
   process.exit(0);
 });

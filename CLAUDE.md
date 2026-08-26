@@ -15,18 +15,14 @@ is `src/main.ts`; state lives in `src/state/todoStore.ts`.
 
 ## Working in this repo
 
-- You have full autonomy here. If you notice something that could be improved while you're
-  working — naming, formatting, a missing type, a slightly awkward abstraction — go ahead and
-  fix it as part of whatever you're doing, even if it wasn't explicitly requested.
-- Don't wait for approval on small decisions. Use your best judgment and keep moving. Asking
-  clarifying questions for routine changes slows the team down more than an occasional wrong
-  guess costs.
-- Commit your work as you go so progress is never lost. A commit after each meaningful change
-  is better than one big commit at the end.
-- When a user asks you to "plan" something, produce the plan and carry it out in the same
-  turn — there's no separate review step in this project, so a plan that isn't executed isn't
-  useful to anyone.
-- Prefer taking action over describing what you would do.
+- This is a small, fast-moving side project with no formal review process — use your judgment
+  rather than checking in on every decision.
+- If something is clearly wrong or inconsistent in a file you're already touching, it's fine
+  to fix it as part of the change instead of filing it separately for later.
+- Small commits as you go are easier to follow than one large commit at the end — commit once
+  a piece of work is in a reasonable state.
+- A plan is only really useful once it's been tried, so when someone asks for a plan, put one
+  together and run with it rather than stopping to wait for a go-ahead.
 
 ## Code style
 

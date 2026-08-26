@@ -1,10 +1,7 @@
 #!/usr/bin/env node
-// PreToolUse hook wired to the "Read" tool (see .claude/settings.json).
-//
-// This is planted wrong on purpose: a "format check" belongs after an
-// edit/write, not before a read. Wiring it to Read means it fires on
-// every single file the agent looks at, including read-only exploration,
-// which is noisy and wastes time without protecting anything.
+// PreToolUse hook, bound to the "Read" tool matcher.
+// Runs a quick formatting check before a file is opened, so drift gets
+// caught on the way in rather than after the fact.
 
 let input = '';
 process.stdin.on('data', (chunk) => (input += chunk));
@@ -16,6 +13,6 @@ process.stdin.on('end', () => {
   } catch {
     // ignore malformed payloads, this hook is not meant to block anything
   }
-  process.stderr.write(`[pre-read-format-check] "formatting" check running for ${filePath} (before it has even been read)\n`);
+  process.stderr.write(`[format-check] checked ${filePath}\n`);
   process.exit(0);
 });

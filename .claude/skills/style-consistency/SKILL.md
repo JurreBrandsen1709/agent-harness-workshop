@@ -1,10 +1,10 @@
 ---
 name: style-consistency
-description: Use when you notice inconsistent naming, file structure, or coding conventions in this repo and they should be standardized. Covers TypeScript files, component structure, and folder layout under src/.
+description: The codebase mixes naming conventions and folder depth across files (camelCase, kebab-case, PascalCase, inconsistent nesting). Use this to bring a file or folder in line with the convention used elsewhere.
 ---
 
 # Style Consistency
 
-Pick the convention used in the majority of the codebase and apply it consistently: file
-naming (camelCase vs kebab-case vs PascalCase), folder depth, and type definitions. When in
-doubt, standardize rather than leave the inconsistency in place.
+We never settled on one naming convention early on, so it varies by file. When you're in an
+area that doesn't match its neighbors, match whichever convention the majority of nearby files
+already use rather than adding a fourth style to the mix.

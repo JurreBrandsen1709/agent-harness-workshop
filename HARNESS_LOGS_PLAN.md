@@ -291,7 +291,7 @@ result as evidence the fix works.
 | `package.json` | Add vitest + `test` script |
 | `.claude/settings.json` | Register the Stop hook |
 | `.claude/hooks/require-tests.js` | New |
-| `.claude/hooks/prompt-plan-reminder.js` | Narrow or remove |
+| `.claude/hooks/prompt-plan-reminder.js` | **Unchanged** — left standing deliberately |
 
 ## Verification
 

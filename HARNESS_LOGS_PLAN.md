@@ -310,11 +310,21 @@ result as evidence the fix works.
 
 ## Sequencing
 
-1. `harness-logs/` + reader + README
-2. Author and generate the five logs, verify fidelity
-3. **Baseline eval run** on the untouched harness
-4. Harness fix: vitest, `AGENT.md`, `CLAUDE.md`, Stop hook, plan-reminder
-5. Treatment eval run + comparison
+1. **Baseline eval run**, in a worktree at `HEAD` — clean of `harness-logs/` and
+   of this file
+2. **Fidelity spike**: one hand-built minimal transcript, tested against
+   `claude --resume`. The result sets the bar for step 4
+3. `harness-logs/` + reader + README
+4. Author and generate the five logs to the bar from step 2, verify fidelity
+5. Harness fix: vitest, `AGENT.md`, `CLAUDE.md`, Stop hook (`prompt-plan-reminder.js`
+   stays)
+6. Treatment eval run + comparison
 
-Step 3 before step 4 is not optional — once the harness changes, the baseline is
-unrecoverable.
+Two ordering constraints, both hard:
+
+- **Step 1 before step 3**, not merely before step 5. The original plan had the
+  baseline after the logs were committed, which would have contaminated it — the
+  eval agent could read the logs describing the exact failure being measured.
+- **Step 2 before step 4.** `--resume` fidelity is the plan's one genuine
+  unknown; discovering the bar after authoring five transcripts means authoring
+  them twice.

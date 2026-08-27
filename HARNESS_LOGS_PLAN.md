@@ -229,9 +229,20 @@ that cannot run are unenforceable. Vitest is the natural fit for a Vite project.
 
 Must short-circuit on `stop_hook_active` to avoid a block loop.
 
-**`prompt-plan-reminder.js`** — its standing "favor shipping" pressure directly
-opposes the new rules. Narrow or remove it, and say which, since it is one of the
-documented planted flaws.
+*Open design problem:* as stated that rule blocks turns it shouldn't — a CSS or
+markup tweak, a comment fix, a pure refactor with an existing green suite, or a
+turn where the user explicitly deferred tests. In a workshop repo where people
+also do non-test work, a hook that blocks every `src/**` turn is a new planted
+flaw rather than a fix. It needs either a narrower trigger or an escape valve
+before it ships. It also needs its own transcript walker, which should share code
+with `read-transcript.mjs` rather than duplicate it.
+
+**`prompt-plan-reminder.js`** — **left in place.** Its standing "favor shipping"
+pressure does directly oppose the new rules, but it is `FACILITATOR_GUIDE.md`'s
+documented cause for a *different* dimension (plan-executes-without-a-go-ahead),
+and removing it here would retire a flaw the existing answer key depends on. The
+contradiction is the lesson: the undertesting writeup names it as a finding and
+leaves it standing.
 
 Deliberately **out of scope**: the `CLAUDE.md`↔`AGENT.md` contradiction beyond
 its Testing section, the three overlapping skills, the mis-bound `Read` hook, the

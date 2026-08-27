@@ -123,6 +123,16 @@ Each targets a task in this app whose scope obviously exceeds one happy path.
 `00` matters more than its position suggests — it is the concrete referent for
 every rule the fix adds, and the shape the rubric grades against.
 
+**These are five independent sessions against the same baseline repo, not a
+sequence.** Each opens on the repo as it is at `HEAD`, so any log that uses a
+test runner has to show it arriving: `02` adds vitest as part of its task, and
+`04` must do the same before `npx vitest run` is credible. Nothing carries over
+between logs.
+
+**Cut line, if authoring runs long:** ship `00` and `04`. The correct reference
+plus the most egregious failure is the smallest pair that still teaches the
+lesson; `01`–`03` are gradations between them.
+
 ### 2. Fidelity details that carry the lesson
 
 - **Every log opens with the real `UserPromptSubmit` injection** — an `attachment`

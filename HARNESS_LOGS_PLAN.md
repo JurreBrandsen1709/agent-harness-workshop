@@ -145,10 +145,39 @@ lesson; `01`–`03` are gradations between them.
 - Tool results match this repo exactly — real file contents, real `tsc -b`
   output, real paths.
 
-Schema confirmed against a real transcript under `~/.claude/projects/`: line
-types `user` / `assistant` / `system` / `attachment` / `file-history-snapshot`;
-tool calls as `message.content[].type === "tool_use"`; results as a `user` line
-carrying `tool_result` plus a sibling `toolUseResult`.
+**Fidelity exception, log `00`.** Its task — reject blank/whitespace-only todos
+— is already implemented: `todoStore.add()` trims and early-returns today. So
+`00` is the one log whose `Read` results do *not* match the repo; it shows a
+pre-trim `todoStore.ts` that has never existed in git history, and ends at the
+current state. Every other log reads real current file contents.
+
+### Schema, as actually observed
+
+Checked against a real transcript under `~/.claude/projects/`. It is larger than
+a first pass suggests — **thirteen** line types, not five:
+
+- Load-bearing for content: `user`, `assistant`, `system`, `attachment`,
+  `file-history-snapshot`
+- Also present: `mode`, `permission-mode`, `atis-latch`, `last-prompt`,
+  `ai-title`, `file-history-delta`, `agent-name`, `cost-state`
+
+Tool calls appear as `message.content[].type === "tool_use"`; results as a `user`
+line carrying `tool_result` plus a sibling `toolUseResult`. The
+`UserPromptSubmit` injection lands as an `attachment` line of subtype
+`hook_additional_context` — confirmed, so the causal thread in §2 works.
+
+Top-level fields go well beyond `parentUuid`/`uuid`/`timestamp`: `sessionId`,
+`version`, `cwd`, `gitBranch`, `promptId`, `requestId`, `effort`, `userType`,
+`entrypoint` and more. Two consequences worth stating plainly:
+
+- **`cwd` is embedded**, and the `~/.claude/projects/` directory name derives
+  from it. A log authored here and copied elsewhere carries this repo's path.
+- **This is not a public contract.** It changes between Claude Code releases, so
+  these logs have a shelf life. That is the strongest argument for keeping the
+  generator (see below) rather than discarding it.
+
+How much of this the fabricated logs must reproduce is set by the spike in
+sequencing step 2, not guessed at here.
 
 ### 3. `read-transcript.mjs`
 

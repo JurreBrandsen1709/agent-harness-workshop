@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-// Generates the harness-snapshot.json artifact described in docs/log-schema/README.md.
+// Generates the harness-snapshot.json artifact: a point-in-time capture of a
+// project's harness (CLAUDE.md/AGENT.md text, hook registration + enabled status,
+// skills, permissions), each tagged control_type: "guide" | "sensor".
 // Usage: node generate-harness-snapshot.mjs [project-dir] [output-path]
 //
 // project-dir is the directory containing the harness being analyzed (CLAUDE.md,
@@ -16,6 +18,7 @@ import {
   mkdirSync,
 } from "node:fs";
 import { join, dirname, resolve } from "node:path";
+import { loadRegisteredHooks } from "../../../lib/hook-observability.mjs";
 
 const invocationDir = process.cwd();
 const projectDir = resolve(invocationDir, process.argv[2] || "workshop");
@@ -31,89 +34,11 @@ function readOrNull(relPath) {
     : null;
 }
 
-function extractHookCommands(hooksBlock) {
-  const results = [];
-  for (const [event, entries] of Object.entries(hooksBlock || {})) {
-    for (const entry of entries) {
-      const matcher = entry.matcher ?? null;
-      for (const hook of entry.hooks || []) {
-        if (hook.type === "command") {
-          results.push({ event, matcher, command: hook.command });
-        }
-      }
-    }
-  }
-  return results;
-}
-
-function commandToRelFile(command) {
-  const match = command.match(/\.claude[\\/]hooks[\\/][^"'\s]+\.js/);
-  return match ? match[0].replace(/\\/g, "/") : null;
-}
-
-function analyzeHookFile(relFile) {
-  const abs = join(projectDir, relFile);
-  if (!existsSync(abs)) return { locActive: 0, locTotal: 0 };
-  const lines = readFileSync(abs, "utf8").split("\n");
-  let locTotal = 0;
-  let locActive = 0;
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (line === "") continue;
-    locTotal++;
-    if (!line.startsWith("//")) locActive++;
-  }
-  return { locActive, locTotal };
-}
-
-const HOOK_EVENT_OBSERVABILITY = {
-  UserPromptSubmit: {
-    observable: true,
-    note: () =>
-      "If enabled, this hook's hookSpecificOutput.additionalContext is injected inline ahead of the next user turn and IS visible in the transcript (as a hook_injection event).",
-  },
-  Stop: {
-    observable: true,
-    note: () =>
-      "Stop hooks surface via a system/stop_hook_summary record (hookInfos, hookErrors, preventedContinuation) even when they produce no additionalContext.",
-  },
-  PreToolUse: {
-    observable: false,
-    note: () =>
-      "PreToolUse hook stdout/stderr is not persisted in session JSONL; enabled/disabled status can only be determined by reading this file, not by scanning transcripts.",
-  },
-  PostToolUse: {
-    observable: false,
-    note: () =>
-      "PostToolUse hook stdout/stderr and side effects are not observable from the transcript alone; correlate this hook's tool_call timestamps against external state (e.g. git log) if you need to confirm it fired.",
-  },
-};
-
-function buildHooks(settings) {
-  return extractHookCommands(settings.hooks).map(
-    ({ event, matcher, command }) => {
-      const file = commandToRelFile(command);
-      const { locActive, locTotal } = file
-        ? analyzeHookFile(file)
-        : { locActive: 0, locTotal: 0 };
-      const observability = HOOK_EVENT_OBSERVABILITY[event] ?? {
-        observable: false,
-        note: () =>
-          `Observability for '${event}' hooks is not yet characterized; verify manually.`,
-      };
-      return {
-        file,
-        event,
-        matcher,
-        command,
-        enabled: locActive > 0,
-        loc_active: locActive,
-        loc_total: locTotal,
-        observable_in_transcript: observability.observable,
-        observability_note: observability.note(),
-      };
-    },
-  );
+function buildHooks() {
+  // Drop the "source" field (the hook's full file text) — it's needed by
+  // session-logs to statically match injected text, but has no place in a
+  // harness snapshot.
+  return loadRegisteredHooks(projectDir).map(({ source, ...hook }) => hook);
 }
 
 function parseFrontmatter(content) {
@@ -140,6 +65,9 @@ function buildSkills() {
       name: frontmatter.name || entry.name,
       path: `.claude/skills/${entry.name}/SKILL.md`,
       summary: frontmatter.description || "",
+      // Guide/Sensor duality (see instructions._note below): skills steer the
+      // agent before it acts, so they're guides.
+      control_type: "guide",
     });
   }
   return skills;
@@ -160,13 +88,18 @@ const snapshot = {
     "CLAUDE.md": readOrNull("CLAUDE.md"),
     "AGENT.md": readOrNull("AGENT.md"),
     "SKILLS.md": readOrNull("SKILLS.md"),
+    // Guide/Sensor duality, per the org's agent-harness whitepaper: guides steer
+    // the agent before it acts (instructions, domain context, permissions,
+    // skills); sensors observe after it acts (hooks). Instructions are guides.
+    control_type: "guide",
     _note:
       "Generated mechanically: check CLAUDE.md and AGENT.md above for contradictory guidance or broken references and replace this placeholder with a concrete note if found — this script does not attempt semantic comparison.",
   },
-  hooks: buildHooks(settings),
+  hooks: buildHooks(),
   skills: buildSkills(),
   permissions: {
     raw: settings.permissions || {},
+    control_type: "guide",
     _note: settingsLocalExists
       ? ".claude/settings.local.json is also present and may override these permissions."
       : "No .claude/settings.local.json found; permissions come only from .claude/settings.json.",

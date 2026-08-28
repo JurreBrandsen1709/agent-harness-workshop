@@ -1,16 +1,16 @@
 export function renderAddTodoForm(onAdd: (text: string) => void): HTMLElement {
   const form = document.createElement('form');
-  form.className = 'flex gap-2 mb-4';
+  form.className = 'mb-6 flex flex-wrap gap-3 sm:flex-nowrap';
 
   const input = document.createElement('input');
   input.type = 'text';
   input.placeholder = 'What needs doing?';
-  input.className = 'flex-1 border border-slate-300 rounded px-3 py-2 text-sm';
+  input.className = 'isks-input';
 
   const btn = document.createElement('button');
   btn.type = 'submit';
   btn.textContent = 'Add';
-  btn.className = 'bg-slate-800 text-white rounded px-4 py-2 text-sm';
+  btn.className = 'isks-btn';
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();

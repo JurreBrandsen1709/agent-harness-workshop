@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-08-28T14:10:00Z",
+  "based_on": {
+    "harness_snapshot": "harness-snapshot.json",
+    "index": "index.json"
+  },
+  "findings": [
+    {
+      "id": 1,
+      "title": "All three registered sensors are dead code",
+      "control_type": "sensor",
+      "harness_component": "workshop/.claude/hooks/pre-read-format-check.js (PreToolUse), workshop/.claude/hooks/post-edit-autocommit.js (PostToolUse), workshop/.claude/hooks/prompt-plan-reminder.js (UserPromptSubmit) — all registered live in workshop/.claude/settings.json",
+      "evidence_session_ids": [],
+      "why_it_matters": "harness-snapshot.json shows loc_active: 0 for all three hooks — every non-blank line is commented out — yet settings.json wires them into real lifecycle events as if they were live. The prompt-plan-reminder hook (the only one whose firing is even observable from a transcript) shows hook_fire_counts: 0 across every single session in index.json, consistent with it never having actually run. This is the harness silently promising sensors it isn't delivering: anyone reading settings.json without checking the hook files themselves would believe there's an active auto-commit safety net and a plan-reminder nudge, when there is neither.",
+      "recommendation": "Either uncomment and ship the three hooks for real, or remove their registration from settings.json so the harness doesn't claim sensors it doesn't have. If post-edit-autocommit.js is restored, reconcile it with finding #2 first — it directly contradicts AGENT.md's 'do not commit automatically' rule.",
+      "confidence": "high"
+    },
+    {
+      "id": 2,
+      "title": "CLAUDE.md and AGENT.md give directly contradictory guides",
+      "control_type": "guide",
+      "harness_component": "workshop/CLAUDE.md vs workshop/AGENT.md",
+      "evidence_session_ids": [],
+      "why_it_matters": "CLAUDE.md says 'commit once a piece of work is in a reasonable state' and 'put a plan together and run with it rather than stopping to wait for a go-ahead.' AGENT.md says 'Do not commit changes automatically... leave commits to the user' and 'write the plan and stop there. Wait for them to say go.' An agent reading both has no way to resolve which instruction wins — this isn't a subtle tension, it's a direct reversal on two of the most consequential behaviors a guide controls (whether the agent commits unsupervised, and whether it waits for approval before acting). CLAUDE.md also points to a SKILLS.md index that doesn't exist.",
+      "recommendation": "Pick one policy per question and delete the other file's conflicting language, or explicitly state a precedence rule (e.g. 'AGENT.md overrides CLAUDE.md on autonomy questions') so the contradiction can't be silently resolved differently session to session.",
+      "confidence": "high"
+    },
+    {
+      "id": 3,
+      "title": "The same audit request was re-issued ~10 times in one day with no carried-forward findings",
+      "control_type": "guide",
+      "harness_component": "workshop harness has no memory/context-carryover mechanism between sessions (no CONTEXT.md-style running findings log)",
+      "evidence_session_ids": [
+        "1116f4f6-79cb-4b4f-a7d8-dcb7ba467e53", "357069a7-3af7-4f4a-98d7-c8257d27d451",
+        "43fe692d-44d0-4aa1-8030-c9bcef0965fd", "53808778-815e-4fa1-b18e-637f1fea60b2",
+        "64b9a154-2ccb-48ef-bbd6-fd28220b803d", "770165de-6d0f-4d82-8695-0c48df55aa86",
+        "7f7e1192-bc8d-4b69-9d00-0506d2bd3c46", "ae52df9f-af37-4383-9794-704a00c61463",
+        "c6416eab-cf4d-4af7-999c-59554168ad91", "c9cb8220-bba0-4215-939a-5f88455948a1"
+      ],
+      "why_it_matters": "10 of 12 sessions on 2026-08-26 have near-identical ai_titles ('Review/Audit security vulnerabilities in hooks/todo app/workshop') and each first prompt opens with 'You previously flagged these candidate vulnerabilities...' — meaning each session re-received the same prior findings as a fresh block of text rather than the harness tracking that the audit already happened and what it already found. Whatever produces that recurring prompt is doing the job a persistent guide (a running findings/decision log) should be doing.",
+      "recommendation": "Introduce a persistent findings log (e.g. a SECURITY_FINDINGS.md or similar) that accumulates confirmed vulnerabilities across runs, so repeat audit sessions build on prior state instead of restarting the same review from a pasted block of 'previously flagged' JSON each time.",
+      "confidence": "medium"
+    },
+    {
+      "id": 4,
+      "title": "The carried-forward vulnerability report contains unresolvable, environment-specific file paths",
+      "control_type": "guide",
+      "harness_component": "the 'previously flagged vulnerabilities' report reused across the repeat-audit sessions in finding #3",
+      "evidence_session_ids": [
+        "1116f4f6-79cb-4b4f-a7d8-dcb7ba467e53", "357069a7-3af7-4f4a-98d7-c8257d27d451",
+        "770165de-6d0f-4d82-8695-0c48df55aa86", "7f7e1192-bc8d-4b69-9d00-0506d2bd3c46",
+        "c6416eab-cf4d-4af7-999c-59554168ad91"
+      ],
+      "why_it_matters": "5 of the 10 repeat-audit sessions hit a Read tool error, and the file paths each session actually attempted are wildly inconsistent with this machine's real layout: '/home/user/repo/.claude/hooks/...', 'c:\\\\Users\\\\jason\\\\Documents\\\\GitHub\\\\claude-code-workshop\\\\workshop-projects\\\\todo_app\\\\...', '/home/user', and 'C:\\\\Users\\\\JurreB\\\\OneDrive - CronosGroep\\\\workshop\\\\src\\\\utils\\\\storage.ts'. These look like placeholder paths from a template/different environment (a different username, a Linux-style path, a different folder structure) baked into the reused findings report, rather than paths resolved against the actual repo each session runs in. Every repeat session wastes at least one tool call failing to read a file that was never at that path to begin with.",
+      "recommendation": "Whatever generates the 'previously flagged vulnerabilities' block should store repo-relative paths (or re-resolve absolute paths at the start of each session) instead of baking in a path captured once in a different environment.",
+      "confidence": "medium"
+    },
+    {
+      "id": 5,
+      "title": "permission_denials confidence:\"confirmed\" is not immune to self-referential false positives",
+      "control_type": "guide+sensor",
+      "harness_component": ".claude/skills/session-logs/scripts/generate-sessions.mjs — the CONFIRMED_DENIAL_TEXT substring match",
+      "evidence_session_ids": ["465294b6-f58a-4a68-9967-a9061f8247d8"],
+      "why_it_matters": "index.json shows 5 permission_denial_count for this session, all in fact false positives: 4 come from this session reading/grepping its own source code and documentation (which literally contains the detection strings, since this session built the detector), and one comes from a diagnostic command in this session printing another session's denial text to a terminal, which the detector then matched as if it were a live denial in this session. A literal-string match is reliable against genuine tool_result text but not against a session that reads or echoes the file that defines the string it's searching for — a real limitation worth knowing before trusting a 'confirmed' count at face value on meta/self-referential sessions.",
+      "recommendation": "No code change proposed here — this is a disclosed limitation of the detector, not a workshop-harness defect. When reading permission_denial_count across sessions, sanity-check high counts against whether the session was working on the detector itself before treating the number as real friction.",
+      "confidence": "high"
+    }
+  ]
+}

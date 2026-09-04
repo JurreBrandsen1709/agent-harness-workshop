@@ -19,7 +19,7 @@ node .claude/skills/harness-snapshot/scripts/generate-harness-snapshot.mjs [proj
 ```
 
 `project-dir` defaults to `workshop` — the directory containing the harness being
-analyzed. `output-path` defaults to `../../../exercises/solutions/exercise01/harness-snapshot.json`, resolved
+analyzed. `output-path` defaults to `docs/log-schema/harness-snapshot.json`, resolved
 relative to the current working directory (not `project-dir`). Pass a different
 `project-dir` if the workshop app ever moves elsewhere.
 

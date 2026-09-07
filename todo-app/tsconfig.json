@@ -14,5 +14,5 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["workshop/src"]
+  "include": ["todo-app/src"]
 }

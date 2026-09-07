@@ -40,15 +40,14 @@ transcripts, not what the harness *claims* it does.
 Five exercises, in order, from raw evidence to an actual reviewed and validated
 harness fix:
 
-1. **Analyze.** Read `harness-logs/` (via the mechanical extraction pipeline already
-   built) and write down real findings: specific harness component, specific
-   evidence, reasoning, a recommendation, a confidence level. Not vibes, not
-   aggregates — claims someone else could check.
-2. **Propose.** Turn those findings into something a human can act on. Not every
-   finding deserves the same treatment: some fixes are mechanical and safe to apply
-   as-is, some need a human to make a call the data doesn't settle, and some need
-   more digging before anyone touches anything.
-3. **Prepare.** Take an approved proposal and actually apply it — through an agent
+1. **Group.** Read `harness-logs/` (via the mechanical extraction pipeline already
+   built) and cluster sessions by real shared cause, not shared vocabulary — each
+   group names a specific harness component. No reasoning yet, just: what's wrong,
+   and where.
+2. **Analyze.** Turn those groups into real findings: why each one matters, a
+   concrete recommendation, a confidence level. Not vibes, not templated-in
+   guesses — claims backed by something you actually read.
+3. **Implement.** Take a finding and actually change the harness — through an agent
    deliberately denied write access to this app's production code. You design what
    tool access it actually needs, and defend that choice.
 4. **Document.** Not every change needs a paper trail, but a meaningful one does:

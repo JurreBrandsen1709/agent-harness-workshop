@@ -30,13 +30,15 @@ Start here: **[MISSION_BRIEFING.md](MISSION_BRIEFING.md)**.
 
 1. **Mission briefing** — [`MISSION_BRIEFING.md`](MISSION_BRIEFING.md). Orientation:
    what a harness is, why it matters, what you'll do today.
-2. **Exercise 1 — Analyze** — [`exercises/exercise-1-analysis-skill.md`](exercises/exercise-1-analysis-skill.md).
-   Turn raw session logs into real, evidenced findings.
-3. **Exercise 2 — Propose** — [`exercises/exercise-2-propose-fixes-skill.md`](exercises/exercise-2-propose-fixes-skill.md).
-   Turn those findings into reviewable proposed fixes — never applied automatically.
-4. **Exercise 3 — Prepare** — take an approved proposal and actually apply it,
-   opening a PR through an agent deliberately denied write access to production
-   code. Design what tool access that agent actually needs.
+2. **Exercise 1 — Group** — [`exercises/exercise-1-analysis-skill.md`](exercises/exercise-1-analysis-skill.md).
+   Turn raw session logs into `groups.json`: sessions clustered by real shared cause,
+   not shared vocabulary. No reasoning yet.
+3. **Exercise 2 — Analyze** — [`exercises/exercise-2-analyze-groups-skill.md`](exercises/exercise-2-analyze-groups-skill.md).
+   Turn those groups into `analysis.json`: fully-reasoned findings with why it
+   matters, a recommendation, and a confidence level.
+4. **Exercise 3 — Implement** — [`exercises/exercise-3-implement-harness-fix.md`](exercises/exercise-3-implement-harness-fix.md).
+   Actually change the harness and open a PR, through an agent deliberately denied
+   write access to production code. Design what tool access it actually needs.
 5. **Exercise 4 — Document** — [`exercises/exercise-4-hdr.md`](exercises/exercise-4-hdr.md).
    Record *why* the harness changed, not just what changed, in the same PR.
 6. **Exercise 5 — Validate** — [`exercises/exercise-5-validation.md`](exercises/exercise-5-validation.md).
@@ -54,7 +56,9 @@ they're never sitting in the working directory a coding agent operates in while
 you're doing an exercise. `.claude/settings.json` also denies the `Read`/`Grep`/`Glob`
 tools from reading `exercises/solutions/**` as a second layer, in case that path ever
 ends up in your working tree anyway (e.g. after checking a solution branch out
-in-place instead of into a separate worktree). Neither layer is a substitute for the
-other: keep solutions on a separate branch/worktree as the primary guarantee, and
-treat the permission rule as a backstop, not a replacement — it doesn't stop `Bash`
-from reading the same file, and it doesn't apply outside Claude Code.
+in-place instead of into a separate worktree) — in Claude Code this also blocks
+`Bash` commands like `cat`/`grep` whose arguments target the denied path, not just its
+own dedicated tools. Neither layer is a substitute for the other, though: keep
+solutions on a separate branch/worktree as the primary guarantee, and treat the
+permission rule as a backstop — it's Claude Code-specific and won't apply if
+participants use a different coding agent.

@@ -34,13 +34,12 @@ repo root) already contains two weeks of real-looking session transcripts of an 
 working in this codebase. The workshop walks through five exercises, from repo root,
 that take you from those raw transcripts to an actual reviewed harness fix:
 
-1. **Analyze** — read the transcripts, write down real, evidenced findings about
-   what's wrong with this harness.
-2. **Propose** — turn findings into reviewable proposed fixes, categorized by how
-   safe they are to act on. Never applies anything.
-3. **Prepare** — take an approved proposal, actually make the change, and open a PR
-   — through an agent that's deliberately restricted from touching this app's
-   production code.
+1. **Group** — cluster session transcripts by real shared cause, not shared
+   vocabulary — no reasoning yet, just what's wrong and where.
+2. **Analyze** — turn those groups into real, evidenced findings: why it matters, a
+   recommendation, a confidence level.
+3. **Implement** — actually make the change and open a PR — through an agent that's
+   deliberately restricted from touching this app's production code.
 4. **Document** — record *why* the harness changed, not just what changed, in the
    same PR (a Harness Decision Record).
 5. **Validate** — check a proposed harness change before it's approved.

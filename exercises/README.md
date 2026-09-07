@@ -7,24 +7,27 @@ reviewed and validated harness fix:
 
 1. [`exercise-1-analysis-skill.md`](exercise-1-analysis-skill.md) — the
    `session-logs` skill currently only mechanically extracts `index.json` and
-   `harness-snapshot.json`. Add the analysis step that turns those into a real
-   `analysis.json`: findings with a specific harness component, evidence, reasoning,
-   a recommendation, and a confidence level. A solution exists — see "Reference
-   solutions" below — don't open it before attempting the exercise.
+   `harness-snapshot.json`. Add a "Phase 2: Group" step that turns those into
+   `groups.json`: sessions clustered by real shared cause, each naming a specific
+   harness component and control type. Grouping only — no reasoning yet. A solution
+   exists — see "Reference solutions" below — don't open it before attempting the
+   exercise.
 
-2. [`exercise-2-propose-fixes-skill.md`](exercise-2-propose-fixes-skill.md) — build a
-   new skill that takes `harness-snapshot.json` + `index.json` + `analysis.json` as
-   context and proposes (never applies) concrete harness fixes. About context
-   engineering: what to load, when to go back for more evidence, and how to tell a
-   mechanically-safe fix apart from one that actually needs a human decision. A
-   reference solution exists — see "Reference solutions" below.
+2. [`exercise-2-analyze-groups-skill.md`](exercise-2-analyze-groups-skill.md) — build
+   a new skill that takes `groups.json` (+ `harness-snapshot.json` + `index.json`)
+   and produces `analysis.json`: the same groups, enriched with `why_it_matters`, a
+   `recommendation`, and a `confidence` level. About context engineering: when the
+   skill needs to escalate from a group's metadata to a specific session file to
+   write reasoning that's actually true, not just restated. A reference solution
+   exists — see "Reference solutions" below.
 
-3. **Prepare a harness change and open a PR** — take an approved proposal from
-   Exercise 2 and actually apply it, through an agent deliberately denied write
-   access to this app's production code (`todo-app/src/**`). The exercise is
-   designing what tool/permission access that agent actually needs, and why — the
-   skill's own architecture is provided, not left open. Not yet written up as its
-   own exercise file.
+3. [`exercise-3-implement-harness-fix.md`](exercise-3-implement-harness-fix.md) —
+   take `analysis.json` and actually change the harness: build a skill that
+   classifies each finding (safe to implement directly, needs a human decision, or
+   needs more investigation) and, for the safe ones, makes the change and opens a
+   PR — run by a dedicated agent that's denied write access to `todo-app/src/**`
+   (production code) and can only touch the harness itself. A reference solution
+   exists — see "Reference solutions" below.
 
 4. [`exercise-4-hdr.md`](exercise-4-hdr.md) — extend the Exercise 3 flow to decide
    whether a change warrants a **Harness Decision Record** (the harness equivalent

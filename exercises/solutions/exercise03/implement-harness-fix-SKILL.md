@@ -13,13 +13,41 @@ decision ever gets silently guessed at* are the thing to check.
 ## The restricted agent (design this first)
 
 See `harness-fix-implementer-AGENT.md` in this same folder for the actual subagent
-definition. The short version: a project-level permission rule denies `Edit`/`Write`
-on `todo-app/src/**` — that's the hard enforcement, and it applies regardless of which
-skill or prompt is running. The subagent definition on top of that scopes which tools
-this specific job gets in the first place (no reason for an implementer agent to have
-web access, for instance) and states the restriction in its own system prompt, so the
-constraint is visible to anyone reading the agent definition, not just discoverable by
-hitting a permission error.
+definition, and `harness-fix-scope-guard.js` for the hook that enforces it. The short
+version: a `PreToolUse` hook checks the tool call's `agent_type` field — present when
+the call originates from a subagent, naming which one — and blocks `Edit`/`Write` on
+`todo-app/src/**` only when `agent_type === "harness-fix-implementer"`. That's the
+hard enforcement, and it's scoped to this one agent specifically.
+
+A project-level `permissions.deny` rule was the first thing we considered and the
+wrong answer: it applies to every session and every agent in the repo, not just this
+one — it would have blocked the main session (and every other agent) from ever
+editing `todo-app/src/**`, breaking normal work everywhere else in the workshop. The
+hook is the only mechanism that's actually scoped to a single agent, because it's the
+only one that can see *who's calling* before deciding whether to block.
+
+The subagent definition on top of that scopes which tools this specific job gets in
+the first place (no reason for an implementer agent to have web access, for instance)
+and states the restriction in its own system prompt, so the constraint is visible to
+anyone reading the agent definition, not just discoverable by hitting a blocked call.
+
+Registration, in `.claude/settings.json` — same as any other hook, project-wide by
+registration even though its effect is scoped by the check inside the script:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/harness-fix-scope-guard.js\"" }
+        ]
+      }
+    ]
+  }
+}
+```
 
 ## Context loading
 
@@ -53,10 +81,10 @@ Computed fresh by this skill, per finding, not stored back into `analysis.json`.
   anything.** Report a named next step.
 
 Before implementing a `mechanical` finding, check whether its fix would actually
-require touching `todo-app/src/**` despite looking mechanical on paper — the
-permission boundary should catch this even if the classification step doesn't. In
-this dataset, no finding's fix reaches into `src/**`, but don't assume that'll always
-be true: check it every time, not just when it happens to matter here.
+require touching `todo-app/src/**` despite looking mechanical on paper — the hook
+should catch this even if the classification step doesn't. In this dataset, no
+finding's fix reaches into `src/**`, but don't assume that'll always be true: check it
+every time, not just when it happens to matter here.
 
 ## Output
 

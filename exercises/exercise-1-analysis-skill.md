@@ -1,7 +1,19 @@
 # Exercise 1: From mechanical extraction to real analysis
 
-The `session-logs` skill only mechanically extracts data today. Your task: add a
-second phase where an agent actually reads that data and writes down real findings.
+You have `harness-logs/`: two weeks of real session transcripts from an agent working
+in `todo-app/` (see [MISSION_BRIEFING.md](../MISSION_BRIEFING.md) if you haven't
+read it). Nobody has gone back and read them yet.
+
+This repo already has a `session-logs` skill (`.claude/skills/session-logs/`) that
+turns those raw transcripts into two structured files — `harness-snapshot.json` (what
+the harness currently is) and `index.json` (per-session facts: tool errors, hook
+fires, permission denials, that kind of thing). But it stops there. It doesn't decide
+what any of that *means* — that's mechanical extraction, not analysis, and nobody has
+added the second half yet.
+
+Your task: add that second phase to the skill — one where an agent actually reads the
+extracted data and writes down real findings: specific, evidenced claims about what's
+wrong with the harness and why.
 
 ## Setup
 

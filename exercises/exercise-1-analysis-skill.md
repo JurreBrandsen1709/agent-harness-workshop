@@ -33,25 +33,39 @@ extraction — string matching, counting, truncation. No model call anywhere. Op
 ## Task
 
 You can do steps 1-2 yourself or have your coding agent do them while you steer —
-either is fine. But by step 3 you're writing instructions an *agent* will follow, not
-a transcript of what you personally did. Once `SKILL.md` has a real "Phase 2"
-section, use it: ask your agent to follow it and produce `analysis.json` itself,
-rather than hand-writing the file to match your own earlier read. If the agent's
-output is weak, that's a sign the instructions are weak — fix `SKILL.md`, not just
-the output.
+either is fine, and doing it yourself first often makes step 3 easier. Steps 3-4 are
+where it stops being optional: that's where you write instructions an agent follows,
+and check what it actually does with them.
 
 1. Read `harness-snapshot.json` and every session's compact entry in `index.json`
    (`ai_title`, `first_prompt_preview`, `harness_signals`). Open an individual
    `sessions/{date}/{id}.json` only when something looks worth a closer read.
 2. Decide which sessions show that something in the harness needs to change, and
    what.
-3. Update `.claude/skills/session-logs/SKILL.md` to add a "Phase 2: Analyze" step —
-   instructions for what to do, not a record of what you did — so the next person (or
-   agent) running this skill does the same analysis, not just this one.
-4. Have your agent follow those instructions and write `docs/log-schema/analysis.json`
-   with real findings, using the schema below. Read the result — if it's vague or
-   padded, that's the skill's instructions failing, not just a bad run; go tighten
-   `SKILL.md` and try again.
+3. Add a new `## Phase 2: Analyze` section to `.claude/skills/session-logs/SKILL.md`,
+   right after its existing (Phase 1, mechanical extraction) content. **This is the
+   actual deliverable of this exercise** — everything else is either input to it or a
+   check on whether it worked. Write it as instructions for what to do, not a record
+   of what you did, and make it self-contained: whoever (or whatever) reads
+   `SKILL.md` next won't have this exercise doc open next to it, so don't just say
+   "see exercise-1.md" — the section needs to actually say the thing. At minimum it
+   must specify:
+   - **What to read**: `harness-snapshot.json` and every session's compact
+     `index.json` entry — and when to go further and open a specific
+     `sessions/{date}/{id}.json`.
+   - **What to write, and where**: `analysis.json`, in the same directory as
+     `index.json`, following a finding schema — reuse the one below or write your own
+     as long as it forces the same specifics (component, evidence, reasoning,
+     recommendation, confidence).
+   - **What separates a real finding from a vague one**: turn the "Rules for a real
+     finding" below into actual instructions in `SKILL.md` — an agent reading only
+     `SKILL.md` needs to be pushed away from padding findings or grouping by
+     shared keywords, the same way you are right now.
+4. Have your agent follow the `SKILL.md` you just wrote — don't write
+   `docs/log-schema/analysis.json` by hand — and see what it produces. Read the
+   result: if it's vague, padded, or groups sessions by shared words instead of
+   shared meaning, that's `SKILL.md`'s instructions failing, not just a bad run. Go
+   tighten the Phase 2 section and run it again.
 
 ### Finding schema
 

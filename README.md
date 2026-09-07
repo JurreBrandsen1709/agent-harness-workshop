@@ -1,5 +1,11 @@
 # Agent Harness Workshop
 
+> **You're on the `solutions` branch.** This holds reference solutions for the
+> exercises. If you're here to *attempt* an exercise, switch to `master` first —
+> checking these out into your working directory defeats the point. See
+> `exercises/README.md` on `master` for the recommended way to check solutions out
+> (a separate `git worktree`) without exposing them to your coding agent.
+
 A hands-on workshop on auditing and fixing AI coding agent harnesses — the
 instructions, skills, and hooks that shape how a coding agent behaves in a
 repository — using real session-transcript evidence instead of guesswork.

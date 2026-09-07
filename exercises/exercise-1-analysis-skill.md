@@ -159,8 +159,8 @@ git worktree add ../workshop-solutions solutions
 
 `../workshop-solutions/exercises/solutions/exercise01/` has the reference
 `harness-snapshot.json`, `index.json`, `sessions/`, and `groups.json` for this same
-`harness-logs/` dataset, plus `session-logs-phase-2.md` for the reference Phase 2
-instructions. Open these yourself, in an editor — don't point your agent at that
+`harness-logs/` dataset, plus `session-logs-phase-2-group.md` for the reference Phase
+2 instructions. Open these yourself, in an editor — don't point your agent at that
 worktree. Don't look before attempting the exercise; compare after. Differences in
 wording are fine; differences in whether a group is concrete, evidenced, and
 correctly scoped are what to check for.

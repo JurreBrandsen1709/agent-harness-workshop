@@ -20,7 +20,7 @@ import {
   writeFileSync,
   mkdirSync,
 } from "node:fs";
-import { join, resolve, basename } from "node:path";
+import { join, relative, resolve, basename } from "node:path";
 import { homedir } from "node:os";
 import {
   loadRegisteredHooks,
@@ -44,6 +44,10 @@ const defaultLogsDir = join(
   slugifyPath(resolve(invocationDir)),
 );
 const logsDir = resolve(invocationDir, process.argv[2] || defaultLogsDir);
+// Recorded in index.json as a path relative to invocationDir, not the absolute
+// filesystem path — otherwise every regenerated index.json bakes in whichever
+// machine happened to run this script.
+const logsDirForOutput = relative(invocationDir, logsDir) || ".";
 const outputDir = resolve(
   invocationDir,
   process.argv[3] || "docs/log-schema",
@@ -552,7 +556,7 @@ function main() {
   // this skill's SKILL.md, which an LLM performs and persists as analysis.json.
   const index = {
     generated_at: new Date().toISOString(),
-    logs_dir: logsDir,
+    logs_dir: logsDirForOutput,
     date_range: {
       from: dates[0] ?? null,
       to: dates[dates.length - 1] ?? null,

@@ -17,11 +17,15 @@ import {
   writeFileSync,
   mkdirSync,
 } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+import { join, dirname, relative, resolve } from "node:path";
 import { loadRegisteredHooks } from "../../../lib/hook-observability.mjs";
 
 const invocationDir = process.cwd();
 const projectDir = resolve(invocationDir, process.argv[2] || "todo-app");
+// Recorded in the output as a path relative to invocationDir, not the absolute
+// filesystem path — otherwise every regenerated artifact bakes in whichever
+// machine happened to run this script.
+const projectDirForOutput = relative(invocationDir, projectDir) || ".";
 const outputPath = resolve(
   invocationDir,
   process.argv[3] || "docs/log-schema/harness-snapshot.json",
@@ -83,7 +87,7 @@ const settingsLocalExists = existsSync(
 
 const snapshot = {
   captured_at: new Date().toISOString(),
-  project_dir: projectDir,
+  project_dir: projectDirForOutput,
   instructions: {
     "CLAUDE.md": readOrNull("CLAUDE.md"),
     "AGENT.md": readOrNull("AGENT.md"),

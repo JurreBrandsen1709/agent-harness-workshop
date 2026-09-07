@@ -15,10 +15,10 @@ sandbox), that's fine — a local branch with a real commit and a written PR
 description is an acceptable substitute for every success criterion below except the
 literal "PR opened" part. Don't let missing GitHub access block the actual exercise.
 
-## Quick primer: subagents and permission rules
+## Quick primer: subagents and scoped enforcement
 
 Two mechanics this exercise needs, if you haven't used them elsewhere in the
-workshop yet:
+workshop yet — and one wrong instinct worth naming up front.
 
 **A subagent** is a Claude Code agent scoped to a specific job, defined as a markdown
 file with frontmatter, e.g. `.claude/agents/example.md`:
@@ -34,23 +34,41 @@ model: sonnet
 System-prompt-style instructions for what this agent does and how.
 ```
 
-The `tools:` line is your first restriction — list only what the job needs.
+The `tools:` line restricts which tools this agent has *at all* — an on/off switch
+per tool, not a per-path restriction. It won't stop this agent from editing
+`todo-app/src/**` if `Edit` is in its list.
 
-**A permission deny rule** blocks a tool from touching a path, project-wide,
-regardless of which agent is running. In `.claude/settings.json`:
+**The wrong instinct: a project-level permission deny rule.** You might reach for a
+`.claude/settings.json` entry like `"deny": ["Edit(todo-app/src/**)"]`. Don't — that
+applies to *every* session and *every* agent in the repo, including your main session
+doing Exercises 1-2 and any everyday work in `todo-app/src/`. It doesn't restrict one
+agent; it breaks source editing for everyone.
 
-```json
-{
-  "permissions": {
-    "deny": ["Edit(todo-app/src/**)", "Write(todo-app/src/**)"]
+**What actually scopes to one agent: a `PreToolUse` hook that checks who's calling.**
+When a tool call comes from inside a subagent, the hook's input includes an
+`agent_type` field naming that subagent (absent when the main session calls the tool
+directly). A hook can use that to block only this one agent, on only this one path:
+
+```js
+// .claude/hooks/harness-fix-scope-guard.js — PreToolUse, matcher: "Edit|Write"
+let input = "";
+process.stdin.on("data", (chunk) => (input += chunk));
+process.stdin.on("end", () => {
+  const payload = JSON.parse(input || "{}");
+  const isTargetAgent = payload.agent_type === "harness-fix-implementer";
+  const touchesSrc = /todo-app\/src\//.test(payload.tool_input?.file_path ?? "");
+  if (isTargetAgent && touchesSrc) {
+    process.stderr.write("harness-fix-implementer may not write to todo-app/src/**\n");
+    process.exit(2); // non-zero from a PreToolUse hook blocks the tool call
   }
-}
+  process.exit(0);
+});
 ```
 
-This is the actual enforcement — a subagent's system prompt saying "don't touch
-`src/`" is a suggestion; this deny rule is a hard block regardless of what the agent
-decides to do. You'll design your own version of both below — this is just the shape,
-not the answer.
+Registered project-wide in `.claude/settings.json` like any other hook, but its
+*effect* only fires for the one `agent_type` it checks for — your main session and
+every other agent stay unaffected. You'll design your own version of this below —
+this is just the shape, not the answer.
 
 ## Task
 

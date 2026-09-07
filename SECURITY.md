@@ -28,7 +28,7 @@ Real security concerns this policy does cover:
 ## Reporting a Vulnerability
 
 Please report security concerns privately rather than opening a public
-issue: email **jurre.brandsen@infosupport.com** with a description of the
+issue: email **jurrebrandsen@gmail.com** with a description of the
 issue and, if possible, steps to reproduce it.
 
 You should expect an acknowledgment within a few business days. This is a

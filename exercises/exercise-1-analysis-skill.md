@@ -20,15 +20,26 @@ extraction — string matching, counting, truncation. No model call anywhere. Op
 
 ## Task
 
+You can do steps 1-2 yourself or have your coding agent do them while you steer —
+either is fine. But by step 3 you're writing instructions an *agent* will follow, not
+a transcript of what you personally did. Once `SKILL.md` has a real "Phase 2"
+section, use it: ask your agent to follow it and produce `analysis.json` itself,
+rather than hand-writing the file to match your own earlier read. If the agent's
+output is weak, that's a sign the instructions are weak — fix `SKILL.md`, not just
+the output.
+
 1. Read `harness-snapshot.json` and every session's compact entry in `index.json`
    (`ai_title`, `first_prompt_preview`, `harness_signals`). Open an individual
    `sessions/{date}/{id}.json` only when something looks worth a closer read.
 2. Decide which sessions show that something in the harness needs to change, and
    what.
-3. Update `.claude/skills/session-logs/SKILL.md` to add a "Phase 2: Analyze" step
-   describing what you just did in steps 1-2, so the next person running this skill
-   does the same thing.
-4. Write `docs/log-schema/analysis.json` with your findings, using the schema below.
+3. Update `.claude/skills/session-logs/SKILL.md` to add a "Phase 2: Analyze" step —
+   instructions for what to do, not a record of what you did — so the next person (or
+   agent) running this skill does the same analysis, not just this one.
+4. Have your agent follow those instructions and write `docs/log-schema/analysis.json`
+   with real findings, using the schema below. Read the result — if it's vague or
+   padded, that's the skill's instructions failing, not just a bad run; go tighten
+   `SKILL.md` and try again.
 
 ### Finding schema
 
@@ -76,6 +87,19 @@ sessions hit a tool error" but can't tell you *why* — that all 5 were hallucin
 file paths from a different environment, say — because noticing that pattern requires
 actually reading the failed calls. Deciding what's relevant is a judgment call; it
 belongs in a phase where an agent reads and reasons, and writes the result down.
+
+## Success criteria
+
+- `SKILL.md`'s Phase 2 section is instructions an agent can follow on its own, not a
+  log of what you did this one time.
+- Your agent produced `analysis.json` by following those instructions — you didn't
+  hand-write it to match your own earlier read.
+- Every finding names a specific harness component and cites real
+  `evidence_session_ids` — no vague "something seems off" findings.
+- At least one finding required opening a session file, not just reading
+  `index.json`'s counts.
+- If two findings would recommend contradictory changes, that's called out, not left
+  silently inconsistent.
 
 ## Self-check
 

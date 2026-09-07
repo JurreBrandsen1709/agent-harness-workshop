@@ -4,6 +4,23 @@ From Exercise 1 you have three artifacts: `harness-snapshot.json` (what the harn
 *is*), `index.json` (per-session mechanical facts), `analysis.json` (real findings —
 component, evidence, reasoning, recommendation, confidence).
 
+## Before you start: check out the Exercise 1 reference output
+
+The next section walks through the Exercise 1 **reference** `analysis.json` — not
+necessarily your own — because it's guaranteed to have an example of all three fix
+categories in one place; your own findings from Exercise 1 might not happen to hit
+all three. Check it out into a separate directory, same as Exercise 1:
+
+```
+git fetch origin solutions
+git worktree add ../workshop-solutions solutions
+```
+
+`../workshop-solutions/exercises/solutions/exercise01/analysis.json` is the file the
+next section refers to. This is reference material you need *during* this exercise,
+not an answer key to save for the end — the answer key for Exercise 2 itself is in
+its own "Solution" section at the bottom, and that one you should hold off on.
+
 ## Task
 
 Build a new skill, e.g. `.claude/skills/propose-harness-fixes/`, that takes those
@@ -15,9 +32,8 @@ order, and when does it go back for more evidence before proposing something?
 
 ## Why you can't just hand it `analysis.json` and say "fix these"
 
-Walk through `exercises/solutions/exercise01/analysis.json` on the `solutions` branch
-(see "Solution" below for how to check it out) — the Exercise 1 reference output —
-and notice the findings aren't equally safe to act on:
+Walk through the reference `analysis.json` you just checked out and notice the
+findings aren't equally safe to act on:
 
 - **Mechanically verifiable.** E.g. "this hook is registered but every line is
   commented out" — checkable against the same file the finding cites. Safe to
@@ -55,22 +71,25 @@ alone.
   whether it's safe to apply as-is, a decision they need to make, or something that
   needs more digging, without re-deriving that themselves.
 - The skill never edits the harness directly; it writes proposals.
-- Feed it `exercises/solutions/exercise01/analysis.json` (or your own from Exercise 1)
-  and check whether its proposals actually match the three categories above — or
-  whether it treats a policy decision as if it were mechanical.
+- Feed it `../workshop-solutions/exercises/solutions/exercise01/analysis.json` (or
+  your own from Exercise 1) and check whether its proposals actually match the three
+  categories above — or whether it treats a policy decision as if it were mechanical.
+
+## Self-check
+
+- For each proposal your skill produced, could a reviewer tell whether it's safe to
+  apply as-is, a decision they need to make, or something needing more digging —
+  without opening the underlying sessions themselves?
+- Did your skill ever write a diff for something that was actually a policy decision?
+- Did it ever refuse to propose something, and say why, instead of guessing?
+- What did it do when handed a finding whose `evidence_session_ids` don't check out?
 
 ## Solution
 
-Reference solutions live on the `solutions` branch, not on `master` — check it out
-into a **separate** directory so it's never in your agent's working tree:
-
-```
-git fetch origin solutions
-git worktree add ../workshop-solutions solutions
-```
-
-`../workshop-solutions/exercises/solutions/exercise02/` has a reference skill design
-(`propose-harness-fixes-SKILL.md`) and an example `proposals-workshop.json` run
-against `exercises/solutions/exercise01/` (same worktree). Attempt your own design
-first — this one's meant for comparison, not copying. Remove the worktree when done:
-`git worktree remove ../workshop-solutions`.
+`../workshop-solutions/exercises/solutions/exercise02/` (same worktree you already
+checked out above) has a reference skill design (`propose-harness-fixes-SKILL.md`)
+and an example `proposals-workshop.json` run against
+`../workshop-solutions/exercises/solutions/exercise01/`.
+Attempt your own design first — this one's meant for comparison, not copying. Remove
+the worktree when you're done with both exercises: `git worktree remove
+../workshop-solutions`.

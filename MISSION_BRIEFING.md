@@ -40,6 +40,12 @@ transcripts, not what the harness *claims* it does.
 Five exercises, in order, from raw evidence to an actual reviewed and validated
 harness fix:
 
+```
+harness-logs/ → [1: Group] → groups.json → [2: Analyze] → analysis.json
+  → [3: Implement] → PR (diff) → [4: Document] → PR (+ HDR)
+  → [5: Validate] → PR (+ validation) → human approves
+```
+
 1. **Group.** Read `harness-logs/` (via the mechanical extraction pipeline already
    built) and cluster sessions by real shared cause, not shared vocabulary — each
    group names a specific harness component. No reasoning yet, just: what's wrong,

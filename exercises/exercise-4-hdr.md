@@ -30,6 +30,16 @@ components, or turning a hook from advisory to blocking probably does. Too few H
 and the reasoning disappears; too many and the decision history becomes noise nobody
 reads.
 
+Concretely, using Exercise 3's own findings: the `tsconfig.json` include-path fix is
+mechanical, checkable, and has exactly one reasonable outcome — no HDR needed, the PR
+diff already says everything worth saying. The CLAUDE.md/AGENT.md autonomy
+contradiction is different — once a human picks "AGENT.md wins on autonomy," that's a
+real decision, with a real alternative that was seriously in play, and it traces back
+to an actual incident (the human blocking an autonomous commit in session
+`e6041b83`). *That's* the kind of change worth an HDR: it'll shape agent behavior
+going forward, and six months from now nobody will remember why CLAUDE.md's
+autonomy language disappeared unless something wrote it down.
+
 ## Task
 
 Extend the continuous-improvement agent from Exercise 3 so it:
@@ -68,20 +78,17 @@ is captured at decision time, not guessed at afterward.
 
 ## Success criteria
 
-- The flow considers, for every change, whether it warrants an HDR.
-- Meaningful decisions produce one, using `exercises/hdr-template.md`.
-- The HDR ships in the same PR as the change it documents.
-- It connects the change to the evidence and reasoning behind it.
-- Tool/permission choices are explained, not just listed.
-- Missing reasoning is left visibly missing, never invented.
-- Trivial mechanical changes don't generate decision-record noise.
-- A reviewer understands what changed and why without replaying the whole run.
-
-## Self-check
-
-- Could this HDR have been written honestly from the context the agent actually had?
-- Does it capture the actual decision, or a plausible-sounding explanation of the
-  diff?
-- Are tool/permission boundaries recorded as deliberate choices?
-- Would this still make sense six months from now?
-- Are you recording decisions, not every change?
+- The flow considers, for every change, whether it warrants an HDR — trivial
+  mechanical changes (like the `tsconfig.json` fix) don't generate decision-record
+  noise, and meaningful ones (like the autonomy policy call) do.
+- Meaningful decisions produce an HDR using `exercises/hdr-template.md`, shipped in
+  the same PR as the change.
+- The HDR connects the change to the evidence and reasoning behind it — it captures
+  the actual decision, not a plausible-sounding explanation of the diff written after
+  the fact.
+- Tool/permission choices are recorded as deliberate choices, explained rather than
+  just listed.
+- Missing reasoning is left visibly missing, never invented — it could have been
+  written honestly from the context the agent actually had.
+- A reviewer understands what changed and why without replaying the whole run, and it
+  would still make sense six months from now.

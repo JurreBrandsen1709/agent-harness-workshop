@@ -5,7 +5,13 @@ All exercises analyze (and eventually act on) the same fabricated dataset:
 exercises in total, meant to be done in order — from raw evidence to an actual
 reviewed and validated harness fix:
 
-1. [`exercise-1-analysis-skill.md`](exercise-1-analysis-skill.md) — the
+```
+harness-logs/ → [1: Group] → groups.json → [2: Analyze] → analysis.json
+  → [3: Implement] → PR (diff) → [4: Document] → PR (+ HDR)
+  → [5: Validate] → PR (+ validation) → human approves
+```
+
+1. **(light)** [`exercise-1-analysis-skill.md`](exercise-1-analysis-skill.md) — the
    `session-logs` skill currently only mechanically extracts `index.json` and
    `harness-snapshot.json`. Add a "Phase 2: Group" step that turns those into
    `groups.json`: sessions clustered by real shared cause, each naming a specific
@@ -13,7 +19,7 @@ reviewed and validated harness fix:
    exists — see "Reference solutions" below — don't open it before attempting the
    exercise.
 
-2. [`exercise-2-analyze-groups-skill.md`](exercise-2-analyze-groups-skill.md) — build
+2. **(medium)** [`exercise-2-analyze-groups-skill.md`](exercise-2-analyze-groups-skill.md) — build
    a new skill that takes `groups.json` (+ `harness-snapshot.json` + `index.json`)
    and produces `analysis.json`: the same groups, enriched with `why_it_matters`, a
    `recommendation`, and a `confidence` level. About context engineering: when the
@@ -21,7 +27,7 @@ reviewed and validated harness fix:
    write reasoning that's actually true, not just restated. A reference solution
    exists — see "Reference solutions" below.
 
-3. [`exercise-3-implement-harness-fix.md`](exercise-3-implement-harness-fix.md) —
+3. **(heavy — budget the most time here)** [`exercise-3-implement-harness-fix.md`](exercise-3-implement-harness-fix.md) —
    take `analysis.json` and actually change the harness: build a skill that
    classifies each finding (safe to implement directly, needs a human decision, or
    needs more investigation) and, for the safe ones, makes the change and opens a
@@ -29,12 +35,12 @@ reviewed and validated harness fix:
    (production code) and can only touch the harness itself. A reference solution
    exists — see "Reference solutions" below.
 
-4. [`exercise-4-hdr.md`](exercise-4-hdr.md) — extend the Exercise 3 flow to decide
+4. **(medium)** [`exercise-4-hdr.md`](exercise-4-hdr.md) — extend the Exercise 3 flow to decide
    whether a change warrants a **Harness Decision Record** (the harness equivalent
    of an ADR — why the change was made, not just what changed) using
    [`hdr-template.md`](hdr-template.md), and to ship it in the same PR.
 
-5. [`exercise-5-validation.md`](exercise-5-validation.md) — add a validation phase
+5. **(medium)** [`exercise-5-validation.md`](exercise-5-validation.md) — add a validation phase
    that runs *before* the PR from Exercises 3/4 reaches a human reviewer: checking
    the change against its own evidence chain (finding, proposal, diff, HDR) without
    spinning up new agent sessions to test it. Reports what it could and couldn't

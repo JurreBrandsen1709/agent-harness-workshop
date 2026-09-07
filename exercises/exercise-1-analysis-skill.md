@@ -130,39 +130,23 @@ the grouping down. What to actually do about it comes next, in Exercise 2.
   hand-write it to match your own earlier read.
 - Every group names a specific harness component and control type, and cites real
   `evidence_session_ids` — no vague "something seems off" groups.
-- At least one grouping decision required opening a session file, not just reading
-  `index.json`'s counts.
+- At least one grouping decision required opening a session file — something you
+  could **not** have made from `index.json`'s counts alone.
 - No group exists purely because sessions share vocabulary, and no real recurring
   issue got split into two groups by wording differences.
-
-## Self-check
-
-- Could someone who's never seen the raw logs read only `groups.json` and know
-  exactly which sessions and which harness file each group is about?
-- Is at least one grouping decision something you could **not** have made from
-  `index.json`'s counts alone?
-- Did you resist the urge to add `why_it_matters`, `recommendation`, or `confidence`
-  here? That's Exercise 2 — adding it now means guessing without the tools Exercise 2
-  gives you to do it properly.
+- Someone who's never seen the raw logs could read only `groups.json` and know
+  exactly which sessions and which harness file each group is about.
+- You resisted adding `why_it_matters`, `recommendation`, or `confidence` here —
+  that's Exercise 2's job, and adding it now means guessing without the tools
+  Exercise 2 gives you to do it properly.
 
 ## Solution
 
-Reference solutions live on the `solutions` branch, not on `master` — so they're
-never sitting in your working directory where a coding agent could read them while
-you're still attempting the exercise. Check the branch out into a **separate**
-directory:
-
-```
-git fetch origin solutions
-git worktree add ../workshop-solutions solutions
-```
-
-`../workshop-solutions/exercises/solutions/exercise01/` has the reference
+See [`exercises/README.md`](README.md#reference-solutions) for how to check out
+reference solutions without exposing them to your coding agent.
+`exercises/solutions/exercise01/` (on the `solutions` branch) has the reference
 `harness-snapshot.json`, `index.json`, `sessions/`, and `groups.json` for this same
 `harness-logs/` dataset, plus `session-logs-phase-2-group.md` for the reference Phase
-2 instructions. Open these yourself, in an editor — don't point your agent at that
-worktree. Don't look before attempting the exercise; compare after. Differences in
-wording are fine; differences in whether a group is concrete, evidenced, and
+2 instructions. Don't look before attempting the exercise; compare after. Differences
+in wording are fine; differences in whether a group is concrete, evidenced, and
 correctly scoped are what to check for.
-
-Remove the worktree when you're done comparing: `git worktree remove ../workshop-solutions`.

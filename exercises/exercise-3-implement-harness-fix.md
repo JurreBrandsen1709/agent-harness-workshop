@@ -1,12 +1,58 @@
 # Exercise 3: Implement a harness fix — with an agent that can't touch your source code
 
+*This is the heaviest exercise of the five — new mechanics on top of everything from
+Exercises 1-2, plus real git/PR operations. Budget more time for it than the others.*
+
 From Exercise 2 you have `analysis.json`: fully-reasoned findings, each with a
 harness component, why it matters, a recommendation, and a confidence level. Nothing
 has actually changed in the harness yet — that's this exercise.
 
-## Task
+## Prerequisites
 
-Two things, and they depend on each other:
+Actually opening a PR needs a git remote you can push to, with `gh` authenticated
+against it. If you don't have that set up (or don't want to push from a workshop
+sandbox), that's fine — a local branch with a real commit and a written PR
+description is an acceptable substitute for every success criterion below except the
+literal "PR opened" part. Don't let missing GitHub access block the actual exercise.
+
+## Quick primer: subagents and permission rules
+
+Two mechanics this exercise needs, if you haven't used them elsewhere in the
+workshop yet:
+
+**A subagent** is a Claude Code agent scoped to a specific job, defined as a markdown
+file with frontmatter, e.g. `.claude/agents/example.md`:
+
+```
+---
+name: example
+description: One-line description of when to use this agent.
+tools: Read, Edit, Bash
+model: sonnet
+---
+
+System-prompt-style instructions for what this agent does and how.
+```
+
+The `tools:` line is your first restriction — list only what the job needs.
+
+**A permission deny rule** blocks a tool from touching a path, project-wide,
+regardless of which agent is running. In `.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "deny": ["Edit(todo-app/src/**)", "Write(todo-app/src/**)"]
+  }
+}
+```
+
+This is the actual enforcement — a subagent's system prompt saying "don't touch
+`src/`" is a suggestion; this deny rule is a hard block regardless of what the agent
+decides to do. You'll design your own version of both below — this is just the shape,
+not the answer.
+
+## Task
 
 1. **Set up a dedicated, restricted agent** for this job — one that can read
    anything, but can only *write* within the harness surface (`todo-app/CLAUDE.md`,
@@ -15,14 +61,18 @@ Two things, and they depend on each other:
    app logic, only the harness around it.
 2. **Build a skill**, e.g. `.claude/skills/implement-harness-fix/`, that this agent
    runs: it reads `analysis.json`, decides for each finding whether it's safe to
-   implement directly, needs a human decision, or needs more investigation — and for
-   the ones it can safely handle, actually makes the change, commits it, and opens a
-   pull request.
+   implement directly, needs a human decision, or needs more investigation.
+3. **Run it** against your own (or the reference) `analysis.json` and let it act: for
+   findings it can safely handle, it should actually make the change, commit it, and
+   open a pull request (or produce the local-branch substitute from Prerequisites).
+4. **Verify the write-restriction actually holds** — deliberately try to get the
+   agent to touch `todo-app/src/**` and confirm it can't, rather than trusting that
+   the deny rule you wrote does what you think it does.
 
 This is a jump in blast radius from Exercise 2: that skill only ever wrote a JSON file
 that nothing else read. This one writes real files and opens a real PR. The
-write-restriction above is exactly what makes that jump survivable — design it first,
-not as an afterthought once the skill already works.
+write-restriction is exactly what makes that jump survivable — design it first, not
+as an afterthought once the skill already works.
 
 ## Why you can't just point an unrestricted agent at `analysis.json` and say "fix these"
 
@@ -70,40 +120,24 @@ PR unless you design for the difference up front.
 
 ## Success criteria
 
-- The agent literally cannot write to `todo-app/src/**` — verify this by actually
-  trying to get it to, not just by reading the permission config and assuming it
-  holds.
-- Mechanical findings get implemented for real: a diff, a commit, a PR.
+- The agent literally cannot write to `todo-app/src/**` — verified by actually trying
+  to get it to, not just by reading the permission config and assuming it holds.
+- Mechanical findings get implemented for real: a diff, a commit, a PR that traces
+  back to the specific `analysis.json` finding and fix category that produced it.
 - Policy-decision and needs-investigation findings are never silently "fixed" — they
   come out flagged, with the reasoning for *why* they weren't touched, not guessed at.
+- If a finding's evidence didn't check out (stale, missing session IDs), the agent
+  noticed and refused it rather than implementing anyway.
 - Every tool the agent has access to has a one-sentence justification for why it
   needs it — you'll need this again in Exercise 4, when the HDR has to explain these
   decisions.
-- The PR traces back to the specific `analysis.json` finding that motivated it.
-
-## Self-check
-
-- Did you verify the write-restriction actually holds, rather than assuming the deny
-  rule works because you wrote it correctly?
-- Would a reviewer be able to tell, from the PR alone, which finding and which
-  category of fix produced it?
-- Did the skill ever guess at a policy decision instead of stopping and saying so?
-- If a finding's evidence didn't check out, did the agent notice, or did it implement
-  anyway?
 
 ## Solution
 
-Reference solutions live on the `solutions` branch, not on `master` — check it out
-into a **separate** directory so it's never in your agent's working tree:
-
-```
-git fetch origin solutions
-git worktree add ../workshop-solutions solutions
-```
-
-`../workshop-solutions/exercises/solutions/exercise03/` has a reference restricted-
-agent definition, a reference skill design (`implement-harness-fix-SKILL.md`), and an
-example of what it produces for each of the three categories against
-`../workshop-solutions/exercises/solutions/exercise02/analysis.json`. Attempt your own
-design first — this one's meant for comparison, not copying. Remove the worktree when
-you're done: `git worktree remove ../workshop-solutions`.
+See [`exercises/README.md`](README.md#reference-solutions) for how to check out
+reference solutions without exposing them to your coding agent.
+`exercises/solutions/exercise03/` (on the `solutions` branch) has a reference
+restricted-agent definition, a reference skill design
+(`implement-harness-fix-SKILL.md`), and an example of what it produces for each of
+the three categories against `exercises/solutions/exercise02/analysis.json`. Attempt
+your own design first — this one's meant for comparison, not copying.

@@ -26,6 +26,16 @@ were introduced for? Does the change reach outside its intended scope? None of t
 proves future behavior — but it does show the change is internally consistent,
 traceable to a real problem, and free of obvious new risk.
 
+Concretely: for the `tsconfig.json` PR from Exercise 3, validation means re-reading
+the diff against finding #1 and confirming `include` really did change from
+`["todo-app/src"]` to `["src"]` — cheap, fast, done. For the autonomy-policy PR (with
+its Exercise 4 HDR), validation means checking that the HDR's stated rationale
+actually traces back to session `e6041b83` the way it claims to, that the diff only
+touches the two files the decision was about, and that nothing in the change quietly
+also touches the still-open formatting question from finding #2. Same validation
+phase, very different amount of work — which is exactly the "how much is enough"
+design question below.
+
 ## Task
 
 Extend the continuous-improvement flow with a validation phase that runs **before the
@@ -62,28 +72,21 @@ pull request reaches a human reviewer**:
 
 ## Success criteria
 
-- A harness change is validated before it's presented for human approval.
-- Validation is based on evidence, not generic claims like "looks good".
-- The agent checks that finding, proposal, change, and HDR remain consistent.
+- A harness change is validated — with evidence, not generic claims like "looks
+  good" — before it's presented for human approval, and a reviewer would understand
+  why each check passed or failed.
+- The agent checks that finding, proposal, change, and HDR remain consistent, and
+  that it validated the actual change, not just restated the HDR.
 - Relevant tool and permission boundaries are checked.
-- The validation clearly states what could **not** be established.
-- Validation effort is proportional to the change, not identical for every PR.
-- The validation summary is added to the pull request.
+- What could **not** be established is stated explicitly — uncertainty stays visible,
+  never silently turned into a green checkmark.
+- Validation effort is proportional to the change, not identical for every PR (the
+  `tsconfig.json` PR and the autonomy-policy PR don't deserve the same amount of
+  scrutiny) — and lightweight enough that people would actually keep using it.
+- The validation summary is added to the PR, so a human can make a reasonable
+  approval decision without reconstructing the whole analysis themselves.
 - Problems within the existing decision may be corrected, but validation doesn't
-  expand the scope of the change.
-- If resolving a problem requires a new design decision, the agent stops and leaves
-  that to the human reviewer.
-- Validation can stop even when further improvements are still imaginable.
-- The agent stops at **ready for human review** — it never approves or merges its own
-  change.
-
-## Self-check
-
-- Would a reviewer understand why each check passed or failed?
-- Did the agent validate the actual change, rather than merely restating the HDR?
-- Are important uncertainties visible?
-- Is the validation lightweight enough that people would actually keep using this
-  loop?
-- Can a human make a reasonable approval decision from the PR without reconstructing
-  the whole analysis themselves?
-- Could validation stop even if the agent can still imagine further improvements?
+  expand the scope of the change; if fixing something needs a new design decision,
+  the agent stops and leaves that to the human reviewer.
+- Validation can stop even when further improvements are still imaginable — the agent
+  stops at **ready for human review**, it never approves or merges its own change.

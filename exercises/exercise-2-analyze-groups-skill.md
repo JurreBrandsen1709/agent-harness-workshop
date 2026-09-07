@@ -7,15 +7,20 @@ about it*, or *how sure you are* — that's this exercise.
 
 ## Task
 
-Build a new skill, e.g. `.claude/skills/analyze-groups/`, that takes `groups.json`
-(plus `harness-snapshot.json` and `index.json`) and produces `analysis.json`: the same
-groups, each enriched with `why_it_matters`, `recommendation`, and `confidence`.
+1. Build a new skill, e.g. `.claude/skills/analyze-groups/`, that takes
+   `groups.json` (plus `harness-snapshot.json` and `index.json`) and produces
+   `analysis.json`: the same groups, each enriched with `why_it_matters`,
+   `recommendation`, and `confidence`.
+2. Decide, and write into the skill, when it needs to escalate from a group's
+   metadata to actually opening a specific `sessions/{date}/{id}.json` for evidence
+   — `groups.json` on its own is rarely enough to write a truthful `why_it_matters`.
+3. Run it against your own (or the reference) `groups.json` and read the result. If a
+   `why_it_matters` just restates the group's title in different words, that's the
+   skill failing to escalate to real evidence — tighten it and run again.
 
-This is a context-engineering exercise: `groups.json` on its own is rarely enough to
-write a truthful `why_it_matters`. When does the skill need to go open a specific
-`sessions/{date}/{id}.json` to find the actual evidence — a quoted error, a command
-that failed, a decision the agent itself explained — rather than just restating the
-group's title in different words?
+This is a context-engineering exercise: when does the skill need real evidence
+(a quoted error, a command that failed, a decision the agent itself explained)
+rather than just the group metadata it started with?
 
 ## Why you can't just mechanically fill in the reasoning
 
@@ -52,37 +57,23 @@ between two commits. That only comes from reading, not from the group metadata a
 ## Success criteria
 
 - Every finding's `why_it_matters` cites something you could only know from actually
-  reading (a session file, a quoted error, a specific line) — not just the group's
-  own metadata restated in more words.
-- `confidence` is assigned by a rule you could explain to someone else, not a gut feel
-  that varies finding to finding.
+  reading (a session file, a quoted error, a specific line) — you could point to the
+  exact line that justifies it, not just the group's own metadata restated in more
+  words.
+- `confidence` is assigned by a rule you could explain to someone else — if you
+  handed `groups.json` (no reasoning) to two different people, they'd land on the
+  same confidence level for the same group.
 - Every `recommendation` is concrete enough that someone unfamiliar with the
-  investigation could act on it, or at least knows exactly what to check next.
+  investigation could act on it, or at least knows exactly what to check next — and
+  stays inside the harness's own files, not "tell the team to be more careful."
 - The skill doesn't invent reasoning for a group whose evidence doesn't actually
   support the claim it's making.
 
-## Self-check
-
-- Could you point to the exact sentence or line in a session file that justifies each
-  `why_it_matters`?
-- If you handed `groups.json` (no reasoning) to two different people, would they land
-  on different confidence levels for the same group? If so, your rule for confidence
-  isn't tight enough yet.
-- Did you resist recommending something outside the harness's own files (e.g. "tell
-  the team to be more careful") in favor of a concrete, checkable change?
-
 ## Solution
 
-Reference solutions live on the `solutions` branch, not on `master` — check it out
-into a **separate** directory so it's never in your agent's working tree:
-
-```
-git fetch origin solutions
-git worktree add ../workshop-solutions solutions
-```
-
-`../workshop-solutions/exercises/solutions/exercise02/` has a reference skill design
-(`analyze-groups-SKILL.md`) and the resulting `analysis.json`, built from
-`../workshop-solutions/exercises/solutions/exercise01/groups.json`. Attempt your own
-design first — this one's meant for comparison, not copying. Remove the worktree when
-you're done with both exercises: `git worktree remove ../workshop-solutions`.
+See [`exercises/README.md`](README.md#reference-solutions) for how to check out
+reference solutions without exposing them to your coding agent.
+`exercises/solutions/exercise02/` (on the `solutions` branch) has a reference skill
+design (`analyze-groups-SKILL.md`) and the resulting `analysis.json`, built from
+`exercises/solutions/exercise01/groups.json`. Attempt your own design first — this
+one's meant for comparison, not copying.

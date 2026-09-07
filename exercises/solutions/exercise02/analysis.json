@@ -1,8 +1,9 @@
 {
   "generated_at": "2026-09-07T18:00:00Z",
   "based_on": {
-    "harness_snapshot": "harness-snapshot.json",
-    "index": "index.json"
+    "groups": "../exercise01/groups.json",
+    "harness_snapshot": "../exercise01/harness-snapshot.json",
+    "index": "../exercise01/index.json"
   },
   "findings": [
     {

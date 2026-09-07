@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-09-07T18:00:00Z",
+  "based_on": {
+    "harness_snapshot": "harness-snapshot.json",
+    "index": "index.json"
+  },
+  "groups": [
+    {
+      "id": 1,
+      "title": "AGENT.md's definition of \"done\" depends on a build command that fails almost every time",
+      "control_type": "guide",
+      "harness_component": "todo-app/AGENT.md (\"Run npm run build to type-check before considering a change done\") + todo-app/tsconfig.json (\"include\": [\"todo-app/src\"])",
+      "evidence_session_ids": [
+        "3f8b1c62-9d47-4a15-b0e3-7c1a52d9f04b", "c7e04a19-25b6-4f83-9d1c-8ab3f6027e5d",
+        "7c3e9b15-4a02-4d68-9e51-b83f1c60d7a9", "91d6f2a4-0c38-4e71-a5b9-2d47c8e1360f",
+        "b6205fd8-9c14-4a73-b8e0-71d3f4a95c62", "d41f6a90-83b2-4e07-a6c3-501d9e78b42f",
+        "e6041b83-7f2d-4c50-9a1b-3d85f207ae64", "5a2c8d70-b41e-4936-8f2a-6e09b7d3c185",
+        "2b95c47e-1a68-4d23-b7f0-9c46e8135a02", "f95c8207-3b6d-41ae-9c72-08d5e13ba64f"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "No enforceable formatting standard — three guides disagree, and the same lines have already flip-flopped",
+      "control_type": "guide+sensor",
+      "harness_component": "todo-app/CLAUDE.md (\"match the surrounding file's conventions\"), todo-app/AGENT.md (\"follow the existing formatting conventions\"), todo-app/.claude/skills/style-consistency/SKILL.md, and the disabled todo-app/.claude/hooks/pre-read-format-check.js (PreToolUse, loc_active: 0)",
+      "evidence_session_ids": ["b6205fd8-9c14-4a73-b8e0-71d3f4a95c62", "f95c8207-3b6d-41ae-9c72-08d5e13ba64f"]
+    },
+    {
+      "id": 3,
+      "title": "CLAUDE.md and AGENT.md give opposite instructions on autonomy",
+      "control_type": "guide",
+      "harness_component": "todo-app/CLAUDE.md vs todo-app/AGENT.md (commit policy, plan/wait-for-go-ahead policy); CLAUDE.md's two references to SKILLS.md are also broken (file doesn't exist)",
+      "evidence_session_ids": ["e6041b83-7f2d-4c50-9a1b-3d85f207ae64"]
+    },
+    {
+      "id": 4,
+      "title": "All three registered hooks are dead code",
+      "control_type": "sensor",
+      "harness_component": "todo-app/.claude/hooks/pre-read-format-check.js (PreToolUse), post-edit-autocommit.js (PostToolUse), prompt-plan-reminder.js (UserPromptSubmit) — all registered live in todo-app/.claude/settings.json, all loc_active: 0",
+      "evidence_session_ids": ["91d6f2a4-0c38-4e71-a5b9-2d47c8e1360f"]
+    },
+    {
+      "id": 5,
+      "title": "The guides never state the OS/shell, and the agent repeatedly guesses wrong",
+      "control_type": "guide",
+      "harness_component": "todo-app/CLAUDE.md and todo-app/AGENT.md — neither mentions the OS or shell the Bash tool runs in",
+      "evidence_session_ids": [
+        "7c3e9b15-4a02-4d68-9e51-b83f1c60d7a9", "b6205fd8-9c14-4a73-b8e0-71d3f4a95c62",
+        "48a7d3c1-6e59-4b02-8d17-f2905ac36e8b"
+      ]
+    }
+  ]
+}

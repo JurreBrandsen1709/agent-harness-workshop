@@ -15,8 +15,9 @@ order, and when does it go back for more evidence before proposing something?
 
 ## Why you can't just hand it `analysis.json` and say "fix these"
 
-Walk through `exercises/solutions/exercise01/analysis.json` (the Exercise 1 reference
-output) and notice the findings aren't equally safe to act on:
+Walk through `exercises/solutions/exercise01/analysis.json` on the `solutions` branch
+(see "Solution" below for how to check it out) — the Exercise 1 reference output —
+and notice the findings aren't equally safe to act on:
 
 - **Mechanically verifiable.** E.g. "this hook is registered but every line is
   commented out" — checkable against the same file the finding cites. Safe to
@@ -60,7 +61,16 @@ alone.
 
 ## Solution
 
-`exercises/solutions/exercise02/` has a reference skill design
+Reference solutions live on the `solutions` branch, not on `master` — check it out
+into a **separate** directory so it's never in your agent's working tree:
+
+```
+git fetch origin solutions
+git worktree add ../workshop-solutions solutions
+```
+
+`../workshop-solutions/exercises/solutions/exercise02/` has a reference skill design
 (`propose-harness-fixes-SKILL.md`) and an example `proposals-workshop.json` run
-against `exercises/solutions/exercise01/`. Attempt your own design first — this one's
-meant for comparison, not copying.
+against `exercises/solutions/exercise01/` (same worktree). Attempt your own design
+first — this one's meant for comparison, not copying. Remove the worktree when done:
+`git worktree remove ../workshop-solutions`.

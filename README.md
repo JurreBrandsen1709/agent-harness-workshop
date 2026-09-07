@@ -14,8 +14,8 @@ Start here: **[MISSION_BRIEFING.md](MISSION_BRIEFING.md)**.
 - **`harness-logs/`** — fabricated raw session transcripts: roughly two weeks of an
   agent working in `todo-app/`. This is your evidence.
 - **`exercises/`** — five hands-on exercises, from raw evidence to a reviewed and
-  validated harness fix. Reference solutions, where they exist, live under
-  `exercises/solutions/`.
+  validated harness fix. Reference solutions, where they exist, live on a separate
+  `solutions` branch (never on `master`) — see [`exercises/README.md`](exercises/README.md).
 - **`.claude/`** (repo root) — this repo's own meta-tooling: the `session-logs` and
   `harness-snapshot` skills that turn `harness-logs/` into the structured artifacts
   the exercises work from.
@@ -43,6 +43,18 @@ Start here: **[MISSION_BRIEFING.md](MISSION_BRIEFING.md)**.
    Check a proposed harness change against its evidence and its Harness Decision
    Record before the PR is approved.
 
-See [`exercises/README.md`](exercises/README.md) for the full outline. Reference
-solutions, where they exist, live in `exercises/solutions/` — don't open them before
-attempting the exercise yourself.
+See [`exercises/README.md`](exercises/README.md) for the full outline and for how to
+check out reference solutions without exposing them to your coding agent — don't open
+them before attempting the exercise yourself.
+
+## Keeping solutions away from your coding agent
+
+Solutions live on a separate `solutions` branch, not on `master`, specifically so
+they're never sitting in the working directory a coding agent operates in while
+you're doing an exercise. `.claude/settings.json` also denies the `Read`/`Grep`/`Glob`
+tools from reading `exercises/solutions/**` as a second layer, in case that path ever
+ends up in your working tree anyway (e.g. after checking a solution branch out
+in-place instead of into a separate worktree). Neither layer is a substitute for the
+other: keep solutions on a separate branch/worktree as the primary guarantee, and
+treat the permission rule as a backstop, not a replacement — it doesn't stop `Bash`
+from reading the same file, and it doesn't apply outside Claude Code.

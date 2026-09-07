@@ -87,9 +87,22 @@ belongs in a phase where an agent reads and reasons, and writes the result down.
 
 ## Solution
 
-`exercises/solutions/exercise01/` has the reference `harness-snapshot.json`,
-`index.json`, `sessions/`, and `analysis.json` for this same `harness-logs/` dataset,
-plus `exercises/solutions/session-logs-phase-2.md` for the reference Phase 2
-instructions. Don't open these before attempting the exercise — compare after.
-Differences in wording are fine; differences in whether a finding is concrete,
-evidenced, and reasoned are what to check for.
+Reference solutions live on the `solutions` branch, not on `master` — so they're
+never sitting in your working directory where a coding agent could read them while
+you're still attempting the exercise. Check the branch out into a **separate**
+directory:
+
+```
+git fetch origin solutions
+git worktree add ../workshop-solutions solutions
+```
+
+`../workshop-solutions/exercises/solutions/exercise01/` has the reference
+`harness-snapshot.json`, `index.json`, `sessions/`, and `analysis.json` for this same
+`harness-logs/` dataset, plus `session-logs-phase-2.md` for the reference Phase 2
+instructions. Open these yourself, in an editor — don't point your agent at that
+worktree. Don't look before attempting the exercise; compare after. Differences in
+wording are fine; differences in whether a finding is concrete, evidenced, and
+reasoned are what to check for.
+
+Remove the worktree when you're done comparing: `git worktree remove ../workshop-solutions`.

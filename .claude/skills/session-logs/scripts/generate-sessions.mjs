@@ -9,7 +9,7 @@
 // directory for whichever project you run this from.
 // output-dir defaults to "docs/log-schema" (writes output-dir/index.json and
 // output-dir/sessions/{date}/{session_id}.json).
-// harness-project-dir defaults to "workshop" — the directory containing the
+// harness-project-dir defaults to "todo-app" — the directory containing the
 // harness being analyzed (CLAUDE.md, .claude/settings.json, .claude/hooks) used
 // only to know which hooks are registered, so harness_signals can name them.
 
@@ -50,7 +50,7 @@ const outputDir = resolve(
 );
 const harnessProjectDir = resolve(
   invocationDir,
-  process.argv[4] || "workshop",
+  process.argv[4] || "todo-app",
 );
 
 function shape(text, maxLen) {

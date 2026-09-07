@@ -5,9 +5,8 @@ This is the "Phase 2: Analyze" section as it existed in the built solution's
 Phase-1-only starter for the workshop. Use this to compare against your own
 Exercise 1 attempt — not to copy in before you've tried it yourself.
 
-The corresponding example outputs are `analysis-workshop.json` (this repo's own
-harness) and `analysis-home.json` (a second, independent dataset) in this same
-folder.
+The corresponding example output is `exercises/solutions/exercise01/analysis.json`,
+generated against this repo's own `harness-logs/` dataset.
 
 ---
 

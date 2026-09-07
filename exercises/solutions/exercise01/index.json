@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-09-03T19:40:51.194Z",
-  "logs_dir": ".\\agent-harness-workshop\\harness-logs",
+  "generated_at": "2026-09-07T18:23:59.629Z",
+  "logs_dir": "/Users/jurre.brandsen/Documents/workshops/agent-harness-workshop/harness-logs",
   "date_range": {
     "from": "2026-08-24",
     "to": "2026-09-02"
   },
   "session_count": 11,
   "hooks_not_observable": [
-    "PreToolUse:.claude/hooks/pre-read-format-check.js"
+    "PreToolUse:.claude/hooks/pre-read-format-check.js",
+    "PostToolUse:.claude/hooks/post-edit-autocommit.js"
   ],
   "sessions": [
     {

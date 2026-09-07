@@ -15,7 +15,7 @@ node .claude/skills/session-logs/scripts/generate-sessions.mjs [logs-dir] [outpu
   current working directory using the same slugging rule Claude Code uses:
   `:` and path separators become `-`).
 - `output-dir` defaults to `docs/log-schema`.
-- `harness-project-dir` defaults to `workshop` — used only to read
+- `harness-project-dir` defaults to `todo-app` — used only to read
   `.claude/settings.json` there so `harness_signals` can name the actual registered
   hooks (not a generic guess).
 

@@ -286,7 +286,8 @@
       }
     ],
     "hooks_not_observable": [
-      "PreToolUse:.claude/hooks/pre-read-format-check.js"
+      "PreToolUse:.claude/hooks/pre-read-format-check.js",
+      "PostToolUse:.claude/hooks/post-edit-autocommit.js"
     ],
     "skills_invoked": [],
     "plan_mode_transitions": [],

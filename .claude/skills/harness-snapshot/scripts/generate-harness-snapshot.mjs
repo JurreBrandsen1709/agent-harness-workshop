@@ -6,7 +6,7 @@
 //
 // project-dir is the directory containing the harness being analyzed (CLAUDE.md,
 // AGENT.md, .claude/settings.json, .claude/hooks, .claude/skills) — defaults to
-// "workshop", since this repo separates the workshop app/harness under test from
+// "todo-app", since this repo separates the todo-app harness under test from
 // the meta-tooling (this skill, docs/log-schema) that lives at the repo root.
 // output-path is resolved relative to the current working directory, not project-dir.
 
@@ -21,7 +21,7 @@ import { join, dirname, resolve } from "node:path";
 import { loadRegisteredHooks } from "../../../lib/hook-observability.mjs";
 
 const invocationDir = process.cwd();
-const projectDir = resolve(invocationDir, process.argv[2] || "workshop");
+const projectDir = resolve(invocationDir, process.argv[2] || "todo-app");
 const outputPath = resolve(
   invocationDir,
   process.argv[3] || "docs/log-schema/harness-snapshot.json",

@@ -1,80 +1,66 @@
 # Exercise 2: A skill that proposes harness fixes
 
-## What you start with
+From Exercise 1 you have three artifacts: `harness-snapshot.json` (what the harness
+*is*), `index.json` (per-session mechanical facts), `analysis.json` (real findings —
+component, evidence, reasoning, recommendation, confidence).
 
-From Exercise 1 you now have three artifacts for a given project's harness:
+## Task
 
-- `harness-snapshot.json` — what the harness currently *is* (guides and sensors).
-- `index.json` — per-session mechanical facts (no aggregates, no clustering — just
-  what happened, session by session).
-- `analysis.json` — real findings: specific harness components, evidence, reasoning,
-  recommendations, confidence.
+Build a new skill, e.g. `.claude/skills/propose-harness-fixes/`, that takes those
+three files and produces a concrete, reviewable set of proposed harness changes. It
+must **propose only — never apply a fix itself.** A human reviews and decides.
 
-## Your task
+This is a context-engineering exercise: which files does the skill load, in what
+order, and when does it go back for more evidence before proposing something?
 
-Build a new skill (e.g. `.claude/skills/propose-harness-fixes/`) that takes those
-three files as its context and produces a concrete, reviewable set of proposed
-changes to the harness. It must **propose only — never apply a fix itself.** A human
-reviews and decides.
+## Why you can't just hand it `analysis.json` and say "fix these"
 
-This exercise is about **context engineering**: which of the three files does the
-skill actually need to load, in what order, and when should it go back and read
-something it didn't start with? Getting a good answer out of an agent here depends
-less on prompt wording and more on what context it's given and how that context is
-structured.
+Walk through `exercises/solutions/exercise01/analysis.json` (the Exercise 1 reference
+output) and notice the findings aren't equally safe to act on:
 
-## Why you can't just hand `analysis.json` to an agent and say "fix these"
+- **Mechanically verifiable.** E.g. "this hook is registered but every line is
+  commented out" — checkable against the same file the finding cites. Safe to
+  propose a concrete diff.
+- **Correct diagnosis, fix needs a human decision.** E.g. two guide files give
+  opposite instructions on autonomy — airtight finding, but *which* policy should win
+  isn't in the data anywhere. An agent that picks one silently is guessing.
+- **Correct diagnosis, fix touches something unobservable.** E.g. a recurring failure
+  depends on which shell/OS the team actually uses — something not settled by
+  anything in these three files. Proposing a patch here isn't a fix, it's a guess.
 
-Not every finding in `analysis.json` is equally safe to act on. Walk through the
-findings in `exercises/solutions/analysis-workshop.json` and
-`exercises/solutions/analysis-home.json` (the reference outputs from Exercise 1) and
-notice they fall into different categories:
+A skill that treats all three the same and just starts writing patches will produce
+some good fixes and some confidently wrong ones, indistinguishable from the output
+alone.
 
-- **Mechanically verifiable, unambiguous.** E.g. "these three hooks are registered
-  but every line is commented out" — the fix is directly checkable against the same
-  file the finding cites. A confident, concrete proposal is safe here.
-- **Correct diagnosis, but the fix requires a decision only a human can make.** E.g.
-  CLAUDE.md and AGENT.md give opposite instructions on whether the agent should
-  auto-commit — the finding is airtight, but *which* policy should win isn't in the
-  data anywhere. An agent that picks one silently and "fixes" it is guessing.
-- **Correct diagnosis, but the fix touches something outside what's observable.**
-  E.g. a recurring prompt contains hallucinated file paths from some report-
-  generation step that isn't visible anywhere in the repo — proposing a patch to a
-  system you can't see isn't a real fix, it's a guess dressed up as one.
+## Design questions
 
-A skill that treats all three of these the same way — and just starts writing
-patches — will produce some good fixes and some confidently wrong ones, with no way
-to tell which is which from the output alone. That's the design problem to solve.
-
-## Things to design (this is the exercise — there's no solution provided yet)
-
-1. **What context does the skill load, and when?** Does it need full `sessions/*.json`
-   files at all, or is `harness-snapshot.json` + `index.json` + `analysis.json`
-   usually enough? When should it escalate to reading a specific session file for
-   more evidence before proposing something?
-2. **How does it distinguish the three categories above** before proposing anything?
-   Consider whether `analysis.json`'s schema needs to grow a field for this (e.g.
-   something like `fix_type: "mechanical" | "policy_decision" | "needs_investigation"`)
-   — and if so, whether that's set during Exercise 1's analysis phase or computed by
-   this new skill.
-3. **What does a "proposal" look like for each category?** A mechanical finding
-   probably deserves an actual proposed diff/patch. A policy-decision finding
-   probably deserves two labeled options with tradeoffs, not a patch. A
-   needs-investigation finding probably deserves a named next step ("go find where
-   X is generated"), not a fix attempt.
-4. **What should the skill refuse to do?** Think about what happens if it's handed
-   an incomplete or stale `analysis.json`, or a finding whose `evidence_session_ids`
-   don't actually exist in `index.json`. Should it sanity-check its own inputs before
-   proposing anything from them?
+1. **Context loading.** Is `harness-snapshot.json` + `index.json` + `analysis.json`
+   enough by default? When should the skill escalate to a specific
+   `sessions/{date}/{id}.json` for more evidence before proposing something?
+2. **Classifying the three categories above**, before proposing anything. Does
+   `analysis.json`'s schema need a new field for this (e.g.
+   `fix_type: "mechanical" | "policy_decision" | "needs_investigation"`) — and if so,
+   is it set during Exercise 1's analysis, or computed by this new skill?
+3. **Proposal shape per category.** A mechanical finding gets an actual diff. A
+   policy-decision finding gets two labeled options with tradeoffs, not a patch. A
+   needs-investigation finding gets a named next step, not a fix attempt.
+4. **Refusing bad input.** What happens if `analysis.json` is stale, or a finding's
+   `evidence_session_ids` don't exist in `index.json`? Should the skill sanity-check
+   its inputs before proposing anything from them?
 
 ## Success criteria
 
-- Given the same three input files twice, a human reviewer can tell, for each
-  proposal, whether it's safe to apply as-is, a decision they need to make, or
-  something that needs more digging — without having to re-derive that themselves.
-- The skill never edits the harness directly. It writes proposals; it doesn't act on
-  them.
-- Feed it the two reference `analysis.json` files in `exercises/solutions/` (or,
-  better, your own from Exercise 1) and see whether its proposals for each category
-  actually match the distinctions above — or whether it treats a policy decision as
-  if it were a mechanical fix.
+- Given the same three input files, a reviewer can tell — for each proposal —
+  whether it's safe to apply as-is, a decision they need to make, or something that
+  needs more digging, without re-deriving that themselves.
+- The skill never edits the harness directly; it writes proposals.
+- Feed it `exercises/solutions/exercise01/analysis.json` (or your own from Exercise 1)
+  and check whether its proposals actually match the three categories above — or
+  whether it treats a policy decision as if it were mechanical.
+
+## Solution
+
+`exercises/solutions/exercise02/` has a reference skill design
+(`propose-harness-fixes-SKILL.md`) and an example `proposals-workshop.json` run
+against `exercises/solutions/exercise01/`. Attempt your own design first — this one's
+meant for comparison, not copying.

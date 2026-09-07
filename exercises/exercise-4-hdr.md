@@ -2,141 +2,86 @@
 
 ## What you start with
 
-From the previous exercises, the continuous-improvement flow can now move from
-observed agent behavior to a concrete harness change.
-
-It can analyze past sessions, identify improvements, prepare harness changes, and
-put those changes in a pull request.
-
-That preserves **what changed**.
-
-It does not yet preserve **why**.
-
-A future reviewer may see that an instruction changed, a skill gained a tool, or
-an agent lost a permission — without knowing which evidence led to that decision
-or why this solution was chosen.
+The flow from Exercises 1-3 can now go from observed agent behavior to a concrete
+harness change: analyze sessions, identify an improvement, prepare the change, and
+open a pull request. That preserves **what** changed. It does not preserve **why** —
+a future reviewer sees an instruction change, a skill gaining a tool, or an agent
+losing a permission, with no record of which evidence drove the decision or why this
+approach won over the alternatives.
 
 ## What is a Harness Decision Record?
 
-A **Harness Decision Record (HDR)** is a persistent record of a meaningful
-decision about an agent harness.
-
-Like an Architecture Decision Record (ADR), it captures the reasoning behind a
-design choice. Its scope is the harness: instructions, skills, agents, hooks,
-tools, permissions, knowledge, and other mechanisms that shape agent behavior.
-
-An HDR helps someone later answer:
+A **Harness Decision Record (HDR)** — the harness equivalent of an Architecture
+Decision Record — is a persistent record of a meaningful decision about an agent
+harness (instructions, skills, agents, hooks, tools, permissions, knowledge, or
+anything else shaping agent behavior). It should let someone later answer:
 
 - What problem led to this decision?
-- What did we decide?
-- Why did we choose this approach?
-- What alternatives or trade-offs mattered?
+- What did we decide, and why this approach over the alternatives?
 - What behavior do we expect to change?
 
-The value is not the Markdown file itself. The value is preserving reasoning that
-would otherwise disappear into a session, pull-request discussion, or diff.
+The value isn't the file itself — it's preserving reasoning that would otherwise
+disappear into a session, a PR discussion, or a diff. Template:
+`exercises/hdr-template.md`.
 
-A template is provided at:
+Not every change needs one. A typo fix or an obviously broken path repaired probably
+doesn't. Granting a new tool, changing permissions, moving responsibility between
+components, or turning a hook from advisory to blocking probably does. Too few HDRs
+and the reasoning disappears; too many and the decision history becomes noise nobody
+reads.
 
-`exercises/hdr-template.md`
+## Task
 
-## Does every harness change need an HDR?
+Extend the continuous-improvement agent from Exercise 3 so it:
 
-Not necessarily.
+1. Decides whether a harness change warrants an HDR.
+2. When it does, produces one using `exercises/hdr-template.md` — the agent writes
+   it, not you.
+3. Adds the HDR to the **same pull request** as the harness change.
 
-An HDR records a **decision**, not every edit.
+## Why "summarize the diff afterward" doesn't work
 
-Fixing a typo or repairing an obviously broken path probably does not need one.
-Giving an agent a new tool, changing its permissions, moving responsibility
-between harness components, or changing a hook from advisory to blocking probably
-does.
+A diff only shows what changed, not why. It might show an agent gained GitHub access
+— not whether that was a deliberate requirement for opening PRs or something added
+because it seemed convenient. The absence of production-code write access might be a
+deliberate safety boundary, or something nobody thought about. An HDR writer
+reconstructing reasoning after the fact turns plausible-sounding reasoning into
+invented reasoning. Design the flow so the context needed to write the HDR honestly
+is captured at decision time, not guessed at afterward.
 
-Too few HDRs means important reasoning disappears. Too many makes the decision
-history noisy and less useful.
+## Design questions
 
-## Why "just summarize the diff" doesn't work
-
-The obvious approach is to let an agent inspect the final diff and fill in the
-HDR template afterwards.
-
-But a diff only shows what changed.
-
-It might show that an agent gained GitHub access. It cannot tell you whether that
-was deliberately required to create pull requests or simply added because it
-seemed useful.
-
-Likewise, the absence of production-code write access might be an intentional
-safety boundary — or something nobody considered.
-
-If the HDR writer reconstructs those reasons afterwards, plausible reasoning can
-quietly become invented reasoning.
-
-The improvement flow therefore needs to preserve enough context about the
-decision for the HDR writer to record it faithfully.
-
-## Your task
-
-Extend the continuous-improvement agent from Exercise 3 so that it considers
-whether a harness change warrants an HDR and, when it does, produces one using:
-
-`exercises/hdr-template.md`
-
-The HDR must be added to the **same pull request** as the harness change.
-
-Do not write the HDR yourself.
-
-Design the flow so the agent has enough context to produce a trustworthy record
-of the decision.
-
-## Things to design
-
-1. **What context does the HDR writer need?**
-
-   Decide which existing artifacts it should use: the analysis, proposal, actual
-   change, supporting evidence, or decisions captured while preparing the change.
-
-2. **When should reasoning be captured?**
-
-   Some reasoning cannot reliably be reconstructed from the final diff.
-
-   Pay particular attention to decisions about tools and permissions: why was a
-   capability granted, withheld, or restricted?
-
-3. **How do you prevent invented rationale?**
-
-   Decide what happens when the HDR template asks for reasoning that is not
-   actually present in the available context.
-
-   A visibly incomplete decision record is better than a convincing fictional one.
-
-4. **When is an HDR warranted?**
-
-   Decide how your flow distinguishes mechanical maintenance from a meaningful
-   harness decision worth preserving.
-
-5. **How does the HDR relate to the change?**
-
-   Decide where HDRs live, how they are named, and how a reviewer can connect the
-   decision record to the pull request and harness change it describes.
+1. **What context does the HDR writer need?** The analysis, the proposal, the actual
+   change, supporting evidence, decisions made while preparing the change — which of
+   these, and from where?
+2. **When must reasoning be captured?** Some of it can't be reconstructed from the
+   final diff — especially tool/permission decisions: why was a capability granted,
+   withheld, or restricted?
+3. **How do you prevent invented rationale?** Decide what happens when the template
+   asks for reasoning that isn't actually present in the available context. A
+   visibly incomplete record beats a convincing fictional one.
+4. **When is an HDR warranted?** How does the flow distinguish mechanical
+   maintenance from a decision worth preserving?
+5. **How does the HDR connect to the change?** Where do HDRs live, how are they
+   named, and how does a reviewer trace one back to the PR and harness change it
+   describes?
 
 ## Success criteria
 
-- The continuous-improvement flow considers whether a change warrants an HDR.
-- Meaningful harness decisions produce an HDR using `exercises/hdr-template.md`.
-- The HDR is included in the same pull request as the change.
-- The record connects the change to the evidence and reasoning behind it.
-- Relevant tool and permission choices are explained, not merely listed.
-- Missing reasoning is not silently invented.
-- Trivial mechanical changes do not automatically create decision-record noise.
-- A reviewer can understand **what changed and why** without replaying the entire
-  improvement run.
+- The flow considers, for every change, whether it warrants an HDR.
+- Meaningful decisions produce one, using `exercises/hdr-template.md`.
+- The HDR ships in the same PR as the change it documents.
+- It connects the change to the evidence and reasoning behind it.
+- Tool/permission choices are explained, not just listed.
+- Missing reasoning is left visibly missing, never invented.
+- Trivial mechanical changes don't generate decision-record noise.
+- A reviewer understands what changed and why without replaying the whole run.
 
 ## Self-check
 
-Before you consider this done, ask:
-
-- Could the HDR have been written honestly from the context available to the agent?
-- Does it capture the actual decision rather than a plausible explanation of the diff?
-- Are important tool and permission boundaries recorded as deliberate choices?
-- Would this decision still be understandable six months from now?
-- Are you recording meaningful decisions, rather than simply recording every change?
+- Could this HDR have been written honestly from the context the agent actually had?
+- Does it capture the actual decision, or a plausible-sounding explanation of the
+  diff?
+- Are tool/permission boundaries recorded as deliberate choices?
+- Would this still make sense six months from now?
+- Are you recording decisions, not every change?

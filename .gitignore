@@ -7,3 +7,4 @@ dist/
 .env.*
 *.pem
 *.key
+docs/log-schema/

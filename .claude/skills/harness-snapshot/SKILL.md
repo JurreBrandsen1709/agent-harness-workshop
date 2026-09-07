@@ -9,19 +9,19 @@ Produces `harness-snapshot.json` — a point-in-time capture of this repo's harn
 CLAUDE.md/AGENT.md text, each hook's registration plus enabled/disabled status, the
 skill list, and permissions.
 
-This repo separates the workshop app under analysis (moved to `workshop/`, including
-its own `CLAUDE.md`, `AGENT.md`, `.claude/hooks`, `.claude/skills`) from this
-meta-tooling, which lives at the repo root. Run the bundled script from the repo root
-to generate the mechanical scaffold:
+This repo separates the todo-app under analysis (`todo-app/`, including its own
+`CLAUDE.md`, `AGENT.md`, `.claude/hooks`, `.claude/skills`) from this meta-tooling,
+which lives at the repo root. Run the bundled script from the repo root to generate
+the mechanical scaffold:
 
 ```
 node .claude/skills/harness-snapshot/scripts/generate-harness-snapshot.mjs [project-dir] [output-path]
 ```
 
-`project-dir` defaults to `workshop` — the directory containing the harness being
+`project-dir` defaults to `todo-app` — the directory containing the harness being
 analyzed. `output-path` defaults to `docs/log-schema/harness-snapshot.json`, resolved
 relative to the current working directory (not `project-dir`). Pass a different
-`project-dir` if the workshop app ever moves elsewhere.
+`project-dir` if the todo-app ever moves elsewhere.
 
 The script only extracts structural facts: a hook counts as enabled if any non-comment,
 non-blank line remains in its file; loc counts; the skill list read from each

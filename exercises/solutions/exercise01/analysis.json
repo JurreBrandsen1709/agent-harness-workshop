@@ -1,0 +1,68 @@
+{
+  "generated_at": "2026-09-07T18:00:00Z",
+  "based_on": {
+    "harness_snapshot": "harness-snapshot.json",
+    "index": "index.json"
+  },
+  "findings": [
+    {
+      "id": 1,
+      "title": "AGENT.md's definition of \"done\" is unsatisfiable, and the gap it leaves has already shipped a regression",
+      "control_type": "guide",
+      "harness_component": "todo-app/AGENT.md (\"Run npm run build to type-check before considering a change done\") + todo-app/tsconfig.json (\"include\": [\"todo-app/src\"])",
+      "evidence_session_ids": [
+        "3f8b1c62-9d47-4a15-b0e3-7c1a52d9f04b", "c7e04a19-25b6-4f83-9d1c-8ab3f6027e5d",
+        "7c3e9b15-4a02-4d68-9e51-b83f1c60d7a9", "91d6f2a4-0c38-4e71-a5b9-2d47c8e1360f",
+        "b6205fd8-9c14-4a73-b8e0-71d3f4a95c62", "d41f6a90-83b2-4e07-a6c3-501d9e78b42f",
+        "e6041b83-7f2d-4c50-9a1b-3d85f207ae64", "5a2c8d70-b41e-4936-8f2a-6e09b7d3c185",
+        "2b95c47e-1a68-4d23-b7f0-9c46e8135a02", "f95c8207-3b6d-41ae-9c72-08d5e13ba64f"
+      ],
+      "why_it_matters": "tsconfig.json lives at todo-app/tsconfig.json with \"include\": [\"todo-app/src\"] — a path resolved relative to the config's own location, so it actually looks for todo-app/todo-app/src and finds nothing. `npm run build` (tsc -b && vite build) fails with TS18003 before vite ever runs. This isn't a one-off: 10 of the 11 sessions in this dataset hit this exact error. Two sessions show the real cost isn't just a broken command: in 5a2c8d70, the agent ships a call to `store.add(text)` against a signature that only takes one parameter, then finds it by hand and says outright \"The broken build isn't why this happened; it's why no [check caught it].\" In 2b95c47e, the agent root-causes a live customer-facing regression — a validation guard clause silently dropped by an earlier cleanup commit (9c41f0a) — and concludes \"nothing caught it\" for the same reason, adding \"the fix belongs in the harness, not in another reminder to me.\"",
+      "recommendation": "Fix tsconfig.json's include path (it should be \"src\", not \"todo-app/src\", since the config already lives inside todo-app/) or change how the build command is invoked so paths line up. Until this runs, AGENT.md's \"definition of done\" is not real — treat it as the top-priority fix, since it's the sensor that would have caught the fix for finding #4 too.",
+      "confidence": "high"
+    },
+    {
+      "id": 2,
+      "title": "No enforceable formatting standard — three guides disagree, and the same lines have already flip-flopped",
+      "control_type": "guide+sensor",
+      "harness_component": "todo-app/CLAUDE.md (\"match the surrounding file's conventions\"), todo-app/AGENT.md (\"follow the existing formatting conventions\"), todo-app/.claude/skills/style-consistency/SKILL.md, and the disabled todo-app/.claude/hooks/pre-read-format-check.js (PreToolUse, loc_active: 0)",
+      "evidence_session_ids": ["b6205fd8-9c14-4a73-b8e0-71d3f4a95c62", "f95c8207-3b6d-41ae-9c72-08d5e13ba64f"],
+      "why_it_matters": "In f95c8207 the agent traces the exact same two lines of add-todo-form.ts flipping from single to double quotes and back across two real commits (3b90c2d, then a1f4e07 four days later), and concludes: \"Neither commit was wrong by any rule this repo states — which is the actual problem.\" It then lists CLAUDE.md, AGENT.md, and style-consistency as pointing in three different directions, with no fixed point to converge on. Two days earlier, in b6205fd8, the agent tried to fix this properly — \"Add a formatter so this is checkable\" via `npm install --save-dev prettier` — and the human rejected the dependency add. So the one concrete attempt to fix this in the dataset was blocked, and the hook that could catch format drift on read (pre-read-format-check.js) is fully commented out.",
+      "recommendation": "Pick one enforcement mechanism — most likely approve the prettier addition plus a `format` script, and point CLAUDE.md/AGENT.md/style-consistency at it instead of \"match the surrounding file,\" which has no fixed target to converge on.",
+      "confidence": "high"
+    },
+    {
+      "id": 3,
+      "title": "CLAUDE.md and AGENT.md give opposite instructions on autonomy, and the conflict already produced a live incident",
+      "control_type": "guide",
+      "harness_component": "todo-app/CLAUDE.md vs todo-app/AGENT.md (commit policy, plan/wait-for-go-ahead policy); CLAUDE.md's two references to SKILLS.md are also broken (file doesn't exist)",
+      "evidence_session_ids": ["e6041b83-7f2d-4c50-9a1b-3d85f207ae64"],
+      "why_it_matters": "CLAUDE.md says \"commit once a piece of work is in a reasonable state\" and \"put a plan together and run with it rather than stopping to wait for a go-ahead.\" AGENT.md says \"Do not commit changes automatically... leave commits to the user\" and \"write the plan and stop there. Wait for them to say go.\" This isn't hypothetical: in e6041b83, right after finishing the storage migration, the agent ran `git add -A && git commit -m \"...\"` on its own initiative — exactly what CLAUDE.md tells it to do — and the human had to reject the tool call to stop the autonomous commit AGENT.md explicitly forbids. Separately, CLAUDE.md points to \"SKILLS.md for the skill index\" twice, but harness-snapshot.json shows SKILLS.md is null (doesn't exist) — the four real skills are only discoverable by browsing .claude/skills/ directly.",
+      "recommendation": "Delete the losing side of each contradiction, or state an explicit precedence rule (e.g. \"AGENT.md overrides CLAUDE.md on autonomy questions\"). Either create SKILLS.md or remove the references to it.",
+      "confidence": "high"
+    },
+    {
+      "id": 4,
+      "title": "All three registered hooks are dead code — including the ones that would have caught findings #1 and #2",
+      "control_type": "sensor",
+      "harness_component": "todo-app/.claude/hooks/pre-read-format-check.js (PreToolUse), post-edit-autocommit.js (PostToolUse), prompt-plan-reminder.js (UserPromptSubmit) — all registered live in todo-app/.claude/settings.json, all loc_active: 0",
+      "evidence_session_ids": ["91d6f2a4-0c38-4e71-a5b9-2d47c8e1360f"],
+      "why_it_matters": "harness-snapshot.json shows loc_active: 0 for all three hooks — every non-comment line is stripped out — yet settings.json wires them into real lifecycle events as if they were live. prompt-plan-reminder is the one hook whose firing is even observable from a transcript (PreToolUse/PostToolUse output isn't persisted in session JSONL), and its fire count is 0 across all 11 sessions in index.json — including 91d6f2a4, the one session that actually entered plan mode. These aren't idle hooks: pre-read-format-check.js is exactly the sensor that would have flagged the format drift in finding #2, and post-edit-autocommit.js would have preserved a commit trail through the interrupted commit in finding #3.",
+      "recommendation": "Either uncomment and ship the three hooks for real, or remove their registration from settings.json so the harness doesn't claim sensors it doesn't have. If post-edit-autocommit.js is restored, resolve it against finding #3 first — auto-committing is exactly what AGENT.md forbids, and the one session in this dataset that tried it needed a human to block it.",
+      "confidence": "high"
+    },
+    {
+      "id": 5,
+      "title": "The guides never state the OS/shell, and the agent repeatedly guesses wrong",
+      "control_type": "guide",
+      "harness_component": "todo-app/CLAUDE.md and todo-app/AGENT.md — neither mentions the OS or shell the Bash tool runs in",
+      "evidence_session_ids": [
+        "7c3e9b15-4a02-4d68-9e51-b83f1c60d7a9", "b6205fd8-9c14-4a73-b8e0-71d3f4a95c62",
+        "48a7d3c1-6e59-4b02-8d17-f2905ac36e8b"
+      ],
+      "why_it_matters": "Three sessions burn a tool call on a Unix `head` invocation that fails outright. In 48a7d3c1 the very next attempt (`Get-Content ... | Select-Object -First 20`) also fails — two wrong guesses in a row on the same read. Neither CLAUDE.md nor AGENT.md states what shell/OS the repo runs on, so the agent has nothing to check its guess against. Lower-impact than findings 1-4, but it's a repeated, easily avoidable miss.",
+      "recommendation": "Add one line to CLAUDE.md or AGENT.md's Commands section naming the actual shell/OS (or how to detect it) so the agent stops guessing.",
+      "confidence": "medium"
+    }
+  ]
+}

@@ -1,75 +1,58 @@
 # Exercise 1: From mechanical extraction to real grouping
 
 You have `harness-logs/`: two weeks of real session transcripts from an agent working
-in `todo-app/` (see [MISSION_BRIEFING.md](../MISSION_BRIEFING.md) if you haven't
-read it). Nobody has gone back and read them yet.
+in `todo-app/` (see [MISSION_BRIEFING.md](../MISSION_BRIEFING.md) if you haven't read
+it). Nobody has gone back and read them yet.
 
 This repo already has a `session-logs` skill (`.claude/skills/session-logs/`) that
 turns those raw transcripts into two structured files — `harness-snapshot.json` (what
 the harness currently is) and `index.json` (per-session facts: tool errors, hook
-fires, permission denials, that kind of thing). But it stops there. It doesn't decide
-which sessions are actually about the same underlying problem — that's a judgment
-call, not a mechanical one, and nobody has added it yet.
+fires, permission denials). But it stops there — deciding which sessions are actually
+about the same underlying problem is a judgment call, not a mechanical one, and
+nobody has added it yet.
 
-Your task: add a second phase to the skill where an agent reads the extracted data and
-groups sessions by real, shared cause — not by shared vocabulary.
+Your task: add a second phase to the skill where an agent reads the extracted data
+and groups sessions by real, shared cause — not by shared vocabulary.
 
 This exercise is scoped to grouping only: naming *what's wrong and where*, backed by
-real sessions. The deeper judgment — why it matters, what to actually do about it, how
-confident you are — is Exercise 2. Don't get ahead of yourself and start writing
-recommendations here; that's the next exercise's point, not this one's.
-
-## Setup
-
-Run both scripts from the repo root (or let your agent do this for you), pointing at the fabricated dataset in
-`harness-logs/`:
-
-```
-node .claude/skills/harness-snapshot/scripts/generate-harness-snapshot.mjs todo-app docs/log-schema/harness-snapshot.json
-node .claude/skills/session-logs/scripts/generate-sessions.mjs harness-logs docs/log-schema todo-app
-```
-
-This writes `docs/log-schema/harness-snapshot.json` and `docs/log-schema/index.json`
-(+ `docs/log-schema/sessions/{date}/{id}.json`). Everything in them is rule-based
-extraction — string matching, counting, truncation. No model call anywhere. Open
-`index.json` — that, plus `harness-snapshot.json`, is all you're handed.
+real sessions. Why it matters, what to do about it, how confident you are — that's
+Exercise 2. Don't write recommendations here.
 
 ## Task
 
-You can do steps 1-2 yourself or have your coding agent do them while you steer —
-either is fine, and doing it yourself first often makes step 3 easier. Steps 3-4 are
-where it stops being optional: that's where you write instructions an agent follows,
-and check what it actually does with them.
-
-1. Read `harness-snapshot.json` and every session's compact entry in `index.json`
-   (`ai_title`, `first_prompt_preview`, `harness_signals`). Open an individual
-   `sessions/{date}/{id}.json` only when something looks worth a closer read.
-2. Decide which sessions are really about the same underlying problem, and roughly
-   which part of the harness is implicated.
-3. Add a new `## Phase 2: Group` section to `.claude/skills/session-logs/SKILL.md`,
-   right after its existing (Phase 1, mechanical extraction) content. **This is the
-   actual deliverable of this exercise** — everything else is either input to it or a
-   check on whether it worked. Write it as instructions for what to do, not a record
-   of what you did, and make it self-contained: whoever (or whatever) reads
-   `SKILL.md` next won't have this exercise doc open next to it, so don't just say
-   "see exercise-1.md" — the section needs to actually say the thing. At minimum it
-   must specify:
-   - **What to read**: `harness-snapshot.json` and every session's compact
-     `index.json` entry — and when to open a specific `sessions/{date}/{id}.json` to
-     confirm two sessions are really the same issue, not just similarly worded.
-   - **What to write, and where**: `groups.json`, in the same directory as
-     `index.json`, following a group schema — reuse the one below or write your own
-     as long as it forces the same specifics (component, control type, evidence).
-   - **What separates a real group from keyword clustering**: turn the "Rules for a
-     real group" below into actual instructions in `SKILL.md` — an agent reading only
-     `SKILL.md` needs to be pushed away from grouping by shared words, the same way
-     you are right now.
-4. Have your agent follow the `SKILL.md` you just wrote — don't write
-   `docs/log-schema/groups.json` by hand — and see what it produces. Read the result:
-   if two unrelated sessions get merged because they share a word, or one real
-   recurring issue gets split into two groups because the wording differs, that's
-   `SKILL.md`'s instructions failing, not just a bad run. Go tighten the Phase 2
-   section and run it again.
+1. Run the `harness-snapshot` and `session-logs` skills. Their defaults already point
+   at this repo's fabricated dataset (`todo-app`, `harness-logs`,
+   `docs/log-schema`), so no arguments are needed. This produces
+   `docs/log-schema/harness-snapshot.json`, `docs/log-schema/index.json`, and
+   `docs/log-schema/sessions/{date}/{id}.json`. Everything in them is rule-based
+   extraction — string matching, counting, truncation. No model call anywhere.
+2. Skim `harness-snapshot.json` and index.json's per-session entries (`ai_title`,
+   `first_prompt_preview`, `harness_signals`). You're not expected to read every
+   entry closely or open every session file — inspect enough to notice which
+   sessions look like they share a cause, and open a `sessions/{date}/{id}.json`
+   only to confirm a specific hunch. Do this yourself or have your agent do it while
+   you steer; either is fine.
+3. From that skim, decide roughly which sessions belong together and which part of
+   the harness each group implicates. This doesn't need to be exhaustive or final —
+   step 5 is where you check it against what your agent actually produces.
+4. Add a `## Phase 2: Group` section to `.claude/skills/session-logs/SKILL.md`,
+   right after Phase 1. Have your agent draft it, but design it with your agent instead of accepting
+   the first draft: does it tell a reader who isn't you what to read, what to write
+   and where, and what makes a group real instead of keyword clustering? At minimum
+   it must specify:
+   - **What to read**: `harness-snapshot.json`, every `index.json` entry, and when to
+     open a specific `sessions/{date}/{id}.json` to confirm two sessions are the same
+     issue rather than just similarly worded.
+   - **What to write, and where**: `groups.json` next to `index.json`, with each
+     group carrying the four fields from the schema below — `title`,
+     `control_type`, `harness_component`, `evidence_session_ids` — or an equivalent
+     that forces the same specifics.
+   - **What makes a group real**: fold the "Rules for a real group" below into the
+     section as instructions, not a description of what you did.
+5. Have your agent follow the `SKILL.md` you just wrote to produce `groups.json` —
+   don't hand-write it. Compare the result against your own read from step 3. Two
+   unrelated sessions merged over a shared word, or one issue split by wording, means
+   `SKILL.md`'s instructions failed — tighten Phase 2 and run it again.
 
 ### Group schema
 
@@ -89,49 +72,33 @@ and check what it actually does with them.
 }
 ```
 
-Deliberately no `why_it_matters`, `recommendation`, or `confidence` fields yet — that
-reasoning is Exercise 2's job, and it needs more than this schema gives you to do it
-honestly.
-
 ### Rules for a real group
 
 - **Group by meaning, not shared words.** Two sessions about the same recurring ask
-  are one group, even if worded completely differently. Don't group sessions just
-  because they share vocabulary.
+  are one group, even if worded completely differently.
 - **Name a specific harness component and control type** — an actual hook file, an
   actual CLAUDE.md section, an actual permissions entry. "Something seems off" isn't a
   group.
 - **Confirm ambiguous groupings by reading, not guessing.** If two sessions might or
   might not be the same issue, open the relevant `sessions/{date}/{id}.json` and check
-  the actual `tool_input_summary`/`error_preview` before deciding — that's usually
-  where you can tell for certain, not in the `index.json` summary.
+  the actual `tool_input_summary`/`error_preview` — that's usually where you can tell
+  for certain, not in the `index.json` summary.
 - **Don't force it.** Don't pad a group with sessions that don't really belong, and
   don't split one real recurring issue into multiple groups just because the wording
   differs session to session.
 
-## Why not just compute this mechanically?
-
-Already tried, in this repo's own history: a keyword-overlap heuristic across
-`ai_title`/first-prompt text merged two unrelated sessions because both happened to
-contain "agent" and "workshop" — words that are structurally common in a workshop
-*about* agent harnesses, not evidence the sessions were related. Tuning the threshold
-just moves where the next false merge happens. Worse, a rollup can tell you "5
-sessions hit a tool error" but can't tell you *why* — that all 5 were hallucinated
-file paths from a different environment, say — because noticing that pattern requires
-actually reading the failed calls. Deciding which sessions are really the same issue
-is a judgment call; it belongs in a phase where an agent reads and reasons, and writes
-the grouping down. What to actually do about it comes next, in Exercise 2.
-
 ## Success criteria
 
+- Every group in `groups.json` fills all four schema fields with real values: a
+  `title`, a `control_type` that's actually `guide`, `sensor`, or `guide+sensor`, a
+  `harness_component` naming one specific file or setting, and `evidence_session_ids`
+  that are real IDs from `index.json` — no vague "something seems off" groups.
 - `SKILL.md`'s Phase 2 section is instructions an agent can follow on its own, not a
   log of what you did this one time.
 - Your agent produced `groups.json` by following those instructions — you didn't
   hand-write it to match your own earlier read.
-- Every group names a specific harness component and control type, and cites real
-  `evidence_session_ids` — no vague "something seems off" groups.
-- At least one grouping decision required opening a session file — something you
-  could **not** have made from `index.json`'s counts alone.
+- At least one `evidence_session_ids` entry required opening that session's file to
+  confirm — something `index.json`'s summary alone couldn't tell you.
 - No group exists purely because sessions share vocabulary, and no real recurring
   issue got split into two groups by wording differences.
 - Someone who's never seen the raw logs could read only `groups.json` and know

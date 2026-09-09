@@ -1,5 +1,36 @@
 # Workshop exercises
 
+## Fast track (~20 minutes)
+
+> **In a hurry?** Full track is ~60 minutes for all five exercises. Fast track is
+> ~20 minutes: paste the prompt below to your coding agent to fully complete
+> exercises 1–2 for you, then start on
+> [exercise 3](exercise-3-implement-harness-fix.md) yourself. It doesn't just copy
+> the reference JSON in — it installs the reference skills and actually runs them
+> against `harness-logs/`, so you still see the Phase 2 grouping and the
+> `analyze-groups` skill produce real output, just without doing the design work
+> yourself.
+>
+> ```
+> Fetch the `solutions` branch (git fetch origin solutions) — don't check it out
+> or create a worktree, stay on the current branch. Use
+> `git show origin/solutions:<path>` to read files straight out of that branch.
+> Copy the content of
+> exercises/solutions/exercise01/session-logs-phase-2-group.md in as a new
+> "## Phase 2: Group" section in .claude/skills/session-logs/SKILL.md, right after
+> its Phase 1 section. Copy exercises/solutions/exercise02/analyze-groups-SKILL.md
+> in as a new skill at .claude/skills/analyze-groups/SKILL.md. Then run the
+> session-logs skill (producing groups.json alongside index.json) and the
+> analyze-groups skill (producing analysis.json). Report the paths of everything you created.
+> ```
+>
+> Afterwards you'll have `.claude/skills/session-logs/` with its Phase 2 section,
+> a new `.claude/skills/analyze-groups/` skill, and real `groups.json`/`analysis.json`
+> for this repo's `harness-logs/` dataset — ready for
+> [exercise 3](exercise-3-implement-harness-fix.md).
+
+## All exercises
+
 All exercises analyze (and eventually act on) the same fabricated dataset:
 `harness-logs/` (11 raw session transcripts for the `todo-app/` TODO app). Five
 exercises in total, meant to be done in order — from raw evidence to an actual

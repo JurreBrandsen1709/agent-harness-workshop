@@ -5,5 +5,27 @@
       "Glob(./exercises/solutions/**)",
       "Grep(./exercises/solutions/**)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/harness-fix-write-guard.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/harness-fix-bash-guard.js\""
+          }
+        ]
+      }
+    ]
   }
 }

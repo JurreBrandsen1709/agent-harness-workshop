@@ -5,8 +5,12 @@
 //
 // Usage: node generate-sessions.mjs [logs-dir] [output-dir] [harness-project-dir]
 //
-// logs-dir defaults to ~/.claude/projects/{slug of process.cwd()} — the raw log
-// directory for whichever project you run this from.
+// logs-dir defaults to "harness-logs" — this repo's fabricated dataset of raw
+// session transcripts. It intentionally does NOT default to the real
+// ~/.claude/projects/{slug} directory for whichever project you run this from:
+// this is a public workshop repo, and that default would make the workshop
+// analyze the operator's own personal session logs instead of the fabricated
+// dataset.
 // output-dir defaults to "docs/log-schema" (writes output-dir/index.json and
 // output-dir/sessions/{date}/{session_id}.json).
 // harness-project-dir defaults to "todo-app" — the directory containing the
@@ -21,7 +25,6 @@ import {
   mkdirSync,
 } from "node:fs";
 import { join, relative, resolve, basename } from "node:path";
-import { homedir } from "node:os";
 import {
   loadRegisteredHooks,
   extractAdditionalContextLiteral,
@@ -32,18 +35,8 @@ const TOOL_TEXT_MAX = 2000;
 const PREVIEW_LEN = 500;
 const FINAL_MESSAGE_PREVIEW_LEN = 300;
 
-function slugifyPath(p) {
-  return p.replace(/:/g, "-").replace(/[\\/]/g, "-");
-}
-
 const invocationDir = process.cwd();
-const defaultLogsDir = join(
-  homedir(),
-  ".claude",
-  "projects",
-  slugifyPath(resolve(invocationDir)),
-);
-const logsDir = resolve(invocationDir, process.argv[2] || defaultLogsDir);
+const logsDir = resolve(invocationDir, process.argv[2] || "harness-logs");
 // Recorded in index.json as a path relative to invocationDir, not the absolute
 // filesystem path — otherwise every regenerated index.json bakes in whichever
 // machine happened to run this script.

@@ -1,9 +1,6 @@
 # Exercise 3: Implement a harness fix — with an agent that can't touch your source code
 > tip: run /clear in your chat interface before starting the exercise to reset context.
 
-*This is the heaviest exercise of the five — new mechanics on top of everything from
-Exercises 1-2, plus real git/PR operations. Budget more time for it than the others.*
-
 > **Fast track note:** if you got here via the Fast track prompt, the reference
 > `analyze-groups` skill actually ran against `harness-logs/`, so your `analysis.json`
 > likely has *several* findings, not just one. For speed, you don't need to run the
@@ -86,11 +83,19 @@ this is just the shape, not the answer.
 
 ## Task
 
+Steps 1-2 are a design problem before they're an implementation one. Enable plan mode
+and work through them with your agent — walk through [Things to
+design](#things-to-design) together first — rather than asking it to freehand a
+restricted agent and a skill in one shot.
+
 1. **Set up a dedicated, restricted agent** for this job — one that can read
-   anything, but can only *write* within the harness surface (`todo-app/CLAUDE.md`,
-   `todo-app/AGENT.md`, `todo-app/.claude/**`) and is explicitly denied write access
-   to `todo-app/src/**` — the actual application code. It has no business changing
-   app logic, only the harness around it.
+   anything, but can write anywhere under `todo-app/` *except* `todo-app/src/**` —
+   the actual application code. It has no business changing app logic, only the
+   harness and tooling around it. Resist the urge to narrow this further to just
+   `todo-app/CLAUDE.md`/`AGENT.md`/`.claude/**`: real findings also produce mechanical
+   fixes to files like `tsconfig.json` or `package.json` — harness/tooling config,
+   not app logic — and an allow-list that excludes them forces a human decision on
+   fixes that don't actually need one.
 2. **Build a skill**, e.g. `.claude/skills/implement-harness-fix/`, that this agent
    runs: it reads `analysis.json`, decides for each finding whether it's safe to
    implement directly, needs a human decision, or needs more investigation.

@@ -4,6 +4,19 @@
 *This is the heaviest exercise of the five — new mechanics on top of everything from
 Exercises 1-2, plus real git/PR operations. Budget more time for it than the others.*
 
+> **Fast track note:** if you got here via the Fast track prompt, the reference
+> `analyze-groups` skill actually ran against `harness-logs/`, so your `analysis.json`
+> likely has *several* findings, not just one. For speed, you don't need to run the
+> full classify → implement → commit → PR flow against all of them — one is enough to
+> see the mechanics work. Say this explicitly to your agent, don't leave it to infer:
+>
+> ```
+> analysis.json probably has multiple findings. For now, only act on one of
+> them — pick one classified as safe to implement directly (e.g. "mechanical"),
+> and run the full flow (classify, implement, commit, open PR) against just
+> that finding. Leave the rest of analysis.json untouched.
+> ```
+
 From Exercise 2 you have `analysis.json`: fully-reasoned findings, each with a
 harness component, why it matters, a recommendation, and a confidence level. Nothing
 has actually changed in the harness yet — that's this exercise.

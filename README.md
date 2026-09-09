@@ -28,6 +28,12 @@ Start here: **[MISSION_BRIEFING.md](MISSION_BRIEFING.md)**.
 
 ## How the workshop flows
 
+Two ways to run this: **full track** (~60 minutes) works through all five exercises
+in order; **fast track** (~20 minutes) uses the
+[fast-track booster](exercises/README.md#fast-track) to fully complete exercises 1–2
+for you, so you can jump straight into exercise 3 and still experience the hands-on
+part of the workshop.
+
 1. **Mission briefing** — [`MISSION_BRIEFING.md`](MISSION_BRIEFING.md). Orientation:
    what a harness is, why it matters, what you'll do today.
 2. **Exercise 1 — Group** — [`exercises/exercise-1-analysis-skill.md`](exercises/exercise-1-analysis-skill.md).

@@ -11,9 +11,10 @@ Run the bundled script from the repo root:
 node .claude/skills/session-logs/scripts/generate-sessions.mjs [logs-dir] [output-dir] [harness-project-dir]
 ```
 
-- `logs-dir` defaults to this project's own raw log directory (computed from the
-  current working directory using the same slugging rule Claude Code uses:
-  `:` and path separators become `-`).
+- `logs-dir` defaults to `harness-logs` — this repo's fabricated dataset of raw
+  session transcripts. It never defaults to your real `~/.claude/projects/{slug}`
+  logs, so running the skill without arguments can't accidentally analyze your
+  own personal session history.
 - `output-dir` defaults to `docs/log-schema`.
 - `harness-project-dir` defaults to `todo-app` — used only to read
   `.claude/settings.json` there so `harness_signals` can name the actual registered

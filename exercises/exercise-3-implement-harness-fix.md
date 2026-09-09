@@ -1,4 +1,5 @@
 # Exercise 3: Implement a harness fix — with an agent that can't touch your source code
+> tip: run /clear in your chat interface before starting the exercise to reset context.
 
 *This is the heaviest exercise of the five — new mechanics on top of everything from
 Exercises 1-2, plus real git/PR operations. Budget more time for it than the others.*

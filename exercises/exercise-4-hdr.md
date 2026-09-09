@@ -1,4 +1,5 @@
 # Exercise 4: Record why the harness changed
+> tip: run /clear in your chat interface before starting the exercise to reset context.
 
 ## What you start with
 

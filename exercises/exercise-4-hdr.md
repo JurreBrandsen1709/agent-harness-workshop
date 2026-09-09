@@ -1,4 +1,5 @@
 # Exercise 4: Record why the harness changed
+> tip: run /clear in your chat interface before starting the exercise to reset context.
 
 ## What you start with
 
@@ -60,6 +61,8 @@ invented reasoning. Design the flow so the context needed to write the HDR hones
 is captured at decision time, not guessed at afterward.
 
 ## Design questions
+
+Work through these with your agent, in plan mode, before it extends the flow:
 
 1. **What context does the HDR writer need?** The analysis, the proposal, the actual
    change, supporting evidence, decisions made while preparing the change — which of

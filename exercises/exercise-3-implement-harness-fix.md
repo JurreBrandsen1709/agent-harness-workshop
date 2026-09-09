@@ -1,4 +1,5 @@
 # Exercise 3: Implement a harness fix — with an agent that can't touch your source code
+> tip: run /clear in your chat interface before starting the exercise to reset context.
 
 *This is the heaviest exercise of the five — new mechanics on top of everything from
 Exercises 1-2, plus real git/PR operations. Budget more time for it than the others.*
@@ -114,6 +115,9 @@ some good changes and some confidently wrong ones, indistinguishable in the resu
 PR unless you design for the difference up front.
 
 ## Things to design
+
+Work through these with your agent, in plan mode, before it sets up the restricted
+agent or builds the skill:
 
 1. **Tool and permission design for the agent.** Beyond denying writes to
    `todo-app/src/**`: does it need unrestricted `Bash` (it has to run `git`/`gh`

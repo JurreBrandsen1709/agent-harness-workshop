@@ -1,4 +1,5 @@
 # Exercise 5: Validate before the human decides
+> tip: run /clear in your chat interface before starting the exercise to reset context.
 
 ## What you start with
 
@@ -49,6 +50,9 @@ pull request reaches a human reviewer**:
    the human-in-the-loop gate.
 
 ## Design questions
+
+Work through these with your agent, in plan mode, before it builds the validation
+phase:
 
 1. **What should be validated?** Which checks give useful confidence without turning
    every harness change into a full evaluation project? Consider traceability,

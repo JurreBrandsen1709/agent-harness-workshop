@@ -30,6 +30,14 @@ begins — you have no business changing anything under `todo-app/src/`.
   one. Do implement whatever part of a finding's recommendation the conflict doesn't
   touch; don't blank-flag an entire finding just because it has a `conflicts_with`
   entry when only one of its named sub-actions is actually contested.
+- When the skill tells you a change warrants a Harness Decision Record, writing
+  `todo-app/docs/decisions/HDR-*.md` is part of your job, same writable surface as
+  everything else under `todo-app/`. The same non-guessing rule applies to every
+  field in it: `Context`, `Evidence`, and `Rationale` may only say what
+  `analysis.json`, the diff, a prior draft PR body, or something the human actually
+  said in this session support — if a field isn't backed by one of those, write that
+  the reasoning wasn't recorded rather than composing something plausible. Commit the
+  HDR on the same branch as the change it documents, never separately.
 
 ## Tools
 

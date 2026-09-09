@@ -22,6 +22,9 @@ of it is contested.
   components, to sanity-check a finding's claim before implementing it.
 - `docs/log-schema/index.json` — per-session facts, to verify `evidence_session_ids`
   actually resolve to real sessions.
+- `exercises/hdr-template.md` — the template for any Harness Decision Record this run
+  produces.
+- `todo-app/docs/decisions/` — existing HDRs, if any, to number a new one correctly.
 
 ## Step 0: refuse stale input
 
@@ -97,12 +100,109 @@ skill's own judgment.
   **needs_investigation**: no subagent call, no branch, no PR. Report the finding id,
   category, and the concrete next step or exact tradeoff a human needs to weigh.
 
+## Deciding whether a change needs a Harness Decision Record
+
+Run this after every mechanical action in Step 3 actually lands, and again whenever a
+previously flagged conflict/policy_decision gets resolved (see below). Most
+mechanical actions won't need one — this is not a second classification pass on top
+of Step 2, it's a much narrower question: *did this change something that shapes
+future agent behavior and had a real alternative, or was it a fix with exactly one
+correct answer?*
+
+**Warranted** — the change does at least one of:
+- Grants, removes, or narrows a tool, permission, or capability for an agent or hook.
+- Changes an enforcement mechanism's strength or scope: a new gate where none existed
+  (e.g. adding a `Stop` hook), advisory↔blocking, or widening/narrowing what a hook
+  checks.
+- Resolves a `conflicts_with` pair. This always qualifies — a finding only carries
+  `conflicts_with` because a real alternative was seriously in play, which is the
+  definition of a decision rather than a fix.
+- Moves responsibility for a behavior between agent, hook, skill, or human.
+
+**Not warranted** — the change:
+- Has exactly one checkable correct value with no live-behavior alternative (a path,
+  a typo, a broken reference).
+- Restores a registration to the behavior `harness-snapshot.json`/`analysis.json`
+  already say it was *supposed* to have — bringing dead-but-uncontested code back to
+  life isn't a new decision.
+- Assembles content that already exists verbatim elsewhere (e.g. a missing index file
+  built from names/summaries `harness-snapshot.json` already has).
+
+If a single finding's recommendation bundles both (e.g. "restore hook A and B, add
+new Stop hook C" — A/B restorative, C new), only the qualifying slice gets an HDR;
+don't write one for the whole finding just because part of it qualifies, and don't
+skip the one that does because the rest doesn't.
+
+### Sourcing — never invent
+
+An HDR may only draw on:
+- The specific `analysis.json` finding/group (`harness_component`, `why_it_matters`,
+  `recommendation`, `evidence_session_ids`, `confidence`, `conflicts_with`).
+- The actual diff being committed.
+- When resolving a conflict: the draft PR body that already recorded the
+  options/tradeoffs at flag time — reuse that text, don't regenerate it from memory.
+- Explicit statements the human makes in the current session directing the decision.
+
+If a template field has no backing source from the list above, write
+`_Not recorded: [what's missing and why]_` in that field instead of a plausible-sounding
+guess — a visibly incomplete HDR is correct output, not a failure. This applies to
+`Context`, `Evidence`, and `Rationale` specifically, since those are claims about what
+already happened or was already considered. `Expected effect` and `Validation` are
+different: they're a forward-looking plan the implementer is entitled to author now
+(the same way any new ADR proposes a hypothesis and a way to check it) — write a real
+one, don't leave those blank as if they too required prior evidence.
+
+## Writing the HDR
+
+When the checklist above says yes:
+1. Copy the structure of `exercises/hdr-template.md` exactly — same headers, same
+   order.
+2. Number it by scanning `todo-app/docs/decisions/HDR-*.md` for the highest existing
+   number and incrementing (start at `0001` if none exist). File:
+   `todo-app/docs/decisions/HDR-<NNNN>-<slug>.md`.
+3. `Status: accepted`. Leave the `Result` section exactly as the template's own
+   uncompleted placeholder — filling it in belongs to a later validation pass, not
+   this run.
+4. Have `harness-fix-implementer` write the HDR file in the *same* branch/commit
+   series as the harness change it documents — never a separate branch or a
+   follow-up PR.
+5. Add one line to the PR body pointing at the HDR's path, and have the HDR's own
+   `Context`/`Decision` text name the `analysis.json` finding id(s) it resolves, so a
+   reviewer can trace either direction without replaying the session.
+
+## Resolving a previously flagged conflict or policy decision
+
+This is the second entry point into this skill, used in a later session once a human
+has actually made the call on something Step 3 flagged (a draft PR's options, or a
+reported `policy_decision`). Only run this when the human explicitly names which
+draft PR/branch (or reported finding) they're resolving and which option they've
+chosen — never infer this from silence, and never re-run it speculatively against an
+already-flagged finding on your own initiative.
+
+1. Re-read the original `analysis.json` finding(s) and the existing draft PR body (or
+   the reported flag text, if no PR was opened) to recover the options and tradeoffs
+   already recorded there — this is the evidence base, not something to redo.
+2. Delegate to `harness-fix-implementer`: make the actual edit(s) implementing the
+   chosen option, on the *same branch* the draft PR already used (turning it from a
+   no-diff draft into a real change) — or a new branch off the same naming
+   convention if the finding was only reported, never drafted.
+3. Run the "Deciding whether a change needs a Harness Decision Record" check above —
+   a `conflicts_with` resolution always qualifies. Write the HDR per "Writing the
+   HDR" above, sourcing `Rationale` from the recorded options/tradeoffs plus whatever
+   the human actually said when choosing. If the human gave no reasoning beyond
+   picking an option, the HDR says exactly that — don't supply a reason on their
+   behalf.
+4. Mark the PR ready for review (or open it, if it was only a reported flag) with a
+   body stating the decision made and linking the HDR.
+
 ## Step 4: final summary
 
 Report every finding id, what was implemented vs. flagged (down to the sub-action
-level where a finding was split), and its outcome (PR/branch link, or the flagged
-reason) in one list — this is what makes "nothing was silently fixed or silently
-over-flagged" checkable at a glance.
+level where a finding was split), its outcome (PR/branch link, or the flagged
+reason), and its HDR outcome (`HDR written: <path>` or `No HDR needed: <one-line
+why>`) in one list — this is what makes both "nothing was silently fixed or silently
+over-flagged" and "no decision-record noise for mechanical changes" checkable at a
+glance.
 
 ## Verifying the write-restriction actually holds
 

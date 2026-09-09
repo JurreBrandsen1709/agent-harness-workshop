@@ -116,6 +116,9 @@ PR unless you design for the difference up front.
 
 ## Things to design
 
+Work through these with your agent, in plan mode, before it sets up the restricted
+agent or builds the skill:
+
 1. **Tool and permission design for the agent.** Beyond denying writes to
    `todo-app/src/**`: does it need unrestricted `Bash` (it has to run `git`/`gh`
    commands), or should that be scoped too? What's the actual risk of unrestricted

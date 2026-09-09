@@ -36,10 +36,10 @@ Exercise 2. Don't write recommendations here.
    the harness each group implicates. This doesn't need to be exhaustive or final —
    step 5 is where you check it against what your agent actually produces.
 4. Add a `## Phase 2: Group` section to `.claude/skills/session-logs/SKILL.md`,
-   right after Phase 1. Have your agent draft it, but design it with your agent instead of accepting
-   the first draft: does it tell a reader who isn't you what to read, what to write
-   and where, and what makes a group real instead of keyword clustering? At minimum
-   it must specify:
+   right after Phase 1. Enable plan mode and design it with your agent instead of
+   handing off the whole thing: does it tell a reader who isn't you what to read,
+   what to write and where, and what makes a group real instead of keyword
+   clustering? At minimum it must specify:
    - **What to read**: `harness-snapshot.json`, every `index.json` entry, and when to
      open a specific `sessions/{date}/{id}.json` to confirm two sessions are the same
      issue rather than just similarly worded.

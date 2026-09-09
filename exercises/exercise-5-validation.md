@@ -51,6 +51,9 @@ pull request reaches a human reviewer**:
 
 ## Design questions
 
+Work through these with your agent, in plan mode, before it builds the validation
+phase:
+
 1. **What should be validated?** Which checks give useful confidence without turning
    every harness change into a full evaluation project? Consider traceability,
    original evidence, harness consistency, scope, tools, and permissions.

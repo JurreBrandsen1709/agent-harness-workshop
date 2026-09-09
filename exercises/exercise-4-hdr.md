@@ -62,6 +62,8 @@ is captured at decision time, not guessed at afterward.
 
 ## Design questions
 
+Work through these with your agent, in plan mode, before it extends the flow:
+
 1. **What context does the HDR writer need?** The analysis, the proposal, the actual
    change, supporting evidence, decisions made while preparing the change — which of
    these, and from where?

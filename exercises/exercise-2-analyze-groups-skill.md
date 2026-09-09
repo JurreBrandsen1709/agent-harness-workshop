@@ -7,9 +7,9 @@ IDs. Missing: *why it matters*, *what to do about it*, *how sure you are*.
 
 ## Task
 
-1. Brainstorm the design with your agent before it writes anything — walk through the
-   [design questions](#design-questions) below together, then have it build a new
-   skill (e.g. `.claude/skills/analyze-groups/`) that reads `groups.json`,
+1. Enable plan mode and brainstorm the design with your agent before it writes
+   anything — walk through the [design questions](#design-questions) below together,
+   then have it build a new skill (e.g. `.claude/skills/analyze-groups/`) that reads `groups.json`,
    `harness-snapshot.json`, and `index.json`, and writes `analysis.json`: the same
    groups, each enriched with `why_it_matters`, `recommendation`, and `confidence`.
 2. Make sure the skill you designed together specifies when it must escalate from a
@@ -36,7 +36,7 @@ between two commits.
 
 ## Design questions
 
-Talk through these with your agent before it builds the skill:
+Talk through these with your agent, in plan mode, before it builds the skill:
 
 1. **Context loading.** Is `groups.json` + `harness-snapshot.json` + `index.json`
    enough by default? When should the skill open a specific session file first?

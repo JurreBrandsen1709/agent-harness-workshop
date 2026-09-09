@@ -83,12 +83,14 @@ skill's own judgment.
 - **mechanical** (a whole finding, or the non-contested slice of one): instruct the
   subagent to create branch `harness-fix/finding-<id>-<slug>`, make exactly the
   recommended edit(s), commit with a message citing the finding id/title, and
-  `gh pr create` with a body quoting `harness_component`, `why_it_matters`,
+  `gh pr create --draft` with a body quoting `harness_component`, `why_it_matters`,
   `recommendation`, and `confidence` from `analysis.json` (and, if part of this
   finding's recommendation was withheld as contested, naming that remainder and
-  pointing at the conflict PR below in the same body). If `gh`/a remote isn't
-  available, the subagent stops after the local commit and the skill reports the
-  branch name plus a written PR description as the substitute.
+  pointing at the conflict PR below in the same body). It stays a draft until
+  "Validating before requesting human review" below decides whether to mark it
+  ready. If `gh`/a remote isn't available, the subagent stops after the local commit
+  and the skill reports the branch name plus a written PR description as the
+  substitute.
 - **contested action(s) / un-splittable policy conflicts**: group every contested
   action or whole-finding conflict that references the same `conflicts_with` pair
   into one **draft** PR — no code diff — whose body lists the options/tradeoffs for
@@ -192,17 +194,94 @@ already-flagged finding on your own initiative.
    the human actually said when choosing. If the human gave no reasoning beyond
    picking an option, the HDR says exactly that — don't supply a reason on their
    behalf.
-4. Mark the PR ready for review (or open it, if it was only a reported flag) with a
-   body stating the decision made and linking the HDR.
+4. Open the PR as `--draft` (or update the existing draft in place if one already
+   exists) with a body stating the decision made and linking the HDR. Same as the
+   mechanical path: "Validating before requesting human review" below decides
+   whether it advances to ready — this step never marks it ready directly.
+
+## Validating before requesting human review
+
+Run this after Step 3's edit/commit lands (and after the HDR check, when one
+applies), and before any PR — mechanical or conflict-resolution — is marked ready
+for review. Never start a new agent session to test the changed harness; every check
+below is answerable from artifacts the flow already produced:
+`analysis.json`, the actual diff, `harness-snapshot.json`, `index.json`, and the HDR
+when one exists.
+
+### Checks
+
+1. **Traceability** — does the diff match the finding's `recommendation`, and touch
+   only the file(s) `harness_component` names? Quote the specific clause of
+   `recommendation` the diff implements.
+2. **Evidence still holds** — for each `evidence_session_ids` entry the finding
+   relies on, does it still resolve in `index.json`, and is the *specific* fact
+   `why_it_matters` claims still true against current on-disk state — not just "the
+   session exists," but "the thing it claims is still the case."
+3. **Harness consistency** — re-read the edited file(s), and, when the finding names
+   another file as the other side of a contradiction (a `conflicts_with` pair or an
+   explicitly named "vs." file), re-read that one too. Confirm the contradiction is
+   actually gone, not restated in different words.
+4. **Tools & permissions** — only when the diff touches an agent's `tools:` line,
+   `.claude/settings.json` permissions, or a hook's matcher/scope: does each
+   capability granted or removed match the responsibility the finding names, and
+   nothing broader?
+5. **Scope** — does the diff stay inside `todo-app/` outside `src/**` (already
+   hook-enforced, but confirm it held) and inside the specific file(s) the finding
+   names — no incidental edits elsewhere?
+6. **HDR consistency** (only when an HDR was written) — does the HDR's `Decision`
+   text match the actual diff, and do its `Context`/`Rationale` cite the same
+   finding/evidence this diff addresses?
+
+### Scaling effort
+
+Reuse the HDR-warranted signal from above instead of inventing a second scoring
+system:
+- **No HDR was warranted** (plain mechanical fix): run checks 1, 2, and 5 only —
+  there's nothing for 3/4/6 to check against.
+- **An HDR was warranted** (capability change, enforcement change, conflict
+  resolution): run all six checks, and for check 3 also re-read every file the HDR's
+  `Context` section names, not just the edited file.
+
+### Reporting — never a bare PASS
+
+For every check run, record: status (`PASS` / `FAIL` / `UNKNOWN`), the specific
+artifact that justifies it (cite or quote it, don't just name the file), and one line
+of reasoning. `UNKNOWN` is a legitimate, expected result — use it whenever a check
+would require observing future behavior or information outside the artifacts listed
+above, and say exactly what's missing. Never turn an unanswerable check into a
+`PASS`.
+
+### When a check fails
+
+- **Fixable within the existing decision** (the diff missed part of the
+  recommendation, touched an unrelated line, or the HDR text drifted from the actual
+  diff): fix it directly on the same branch, then re-run the check.
+- **Reveals something the original decision didn't cover** (the fix doesn't actually
+  resolve the finding, or a new contradiction/capability question surfaces that
+  nothing upstream decided): do not fix it and do not guess. Leave the PR in
+  `draft`, add a comment naming exactly what new decision is needed and why
+  validation can't resolve it on its own, and stop — that's a new decision for a
+  human, not something this pass can patch around.
+- **A better idea occurs to you** (an improvement beyond what the finding actually
+  asked for): note it, don't act on it, and don't block the PR on it — that belongs
+  in a future analysis cycle, not this validation pass.
+
+### Finishing
+
+If every check is `PASS` or `UNKNOWN` (with the uncertainty stated) and nothing
+surfaced a new decision, add a `## Validation` section to the PR body — one line per
+check run: status, artifact cited, reasoning — and mark the PR ready
+(`gh pr ready`). `gh pr ready` means "ready for a human to look at," not "approved" —
+the agent's job ends here; it never approves or merges its own change.
 
 ## Step 4: final summary
 
 Report every finding id, what was implemented vs. flagged (down to the sub-action
 level where a finding was split), its outcome (PR/branch link, or the flagged
-reason), and its HDR outcome (`HDR written: <path>` or `No HDR needed: <one-line
-why>`) in one list — this is what makes both "nothing was silently fixed or silently
-over-flagged" and "no decision-record noise for mechanical changes" checkable at a
-glance.
+reason), its HDR outcome (`HDR written: <path>` or `No HDR needed: <one-line why>`),
+and its validation outcome (`Ready for review` or `Left in draft: <what's blocking
+it>`) in one list — this is what makes "nothing was silently fixed, silently
+over-flagged, or silently waved through" checkable at a glance.
 
 ## Verifying the write-restriction actually holds
 

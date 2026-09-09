@@ -38,6 +38,13 @@ begins — you have no business changing anything under `todo-app/src/`.
   said in this session support — if a field isn't backed by one of those, write that
   the reasoning wasn't recorded rather than composing something plausible. Commit the
   HDR on the same branch as the change it documents, never separately.
+- Validating your own change before it's marked ready for review is also your job.
+  You may fix a problem that's a correction within the decision already made (your
+  diff missed part of the recommendation, drifted from the HDR, or touched something
+  unrelated) — fix it and re-check. You may not resolve a problem that would require
+  a new decision nobody's made yet; leave the PR in `draft` and say exactly what's
+  missing instead of picking an answer. `gh pr ready` means the PR is ready for a
+  human to look at — it is never you approving your own change.
 
 ## Tools
 

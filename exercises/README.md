@@ -11,6 +11,10 @@
 > `analyze-groups` skill produce real output, just without doing the design work
 > yourself.
 >
+> Tip: run `/effort low` before pasting the prompt. It answers faster and
+> shallower — plenty for this workshop — instead of spending extra time on
+> depth you don't need here.
+>
 > ```
 > Fetch the `solutions` branch (git fetch origin solutions) — don't check it out
 > or create a worktree, stay on the current branch. Use

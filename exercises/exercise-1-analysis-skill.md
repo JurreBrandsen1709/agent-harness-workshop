@@ -49,10 +49,9 @@ Exercise 2. Don't write recommendations here.
      that forces the same specifics.
    - **What makes a group real**: fold the "Rules for a real group" below into the
      section as instructions, not a description of what you did.
-5. Have your agent follow the `SKILL.md` you just wrote to produce `groups.json` —
-   don't hand-write it. Compare the result against your own read from step 3. Two
-   unrelated sessions merged over a shared word, or one issue split by wording, means
-   `SKILL.md`'s instructions failed — tighten Phase 2 and run it again.
+5. Run the `session-logs` skill again to produce `groups.json`.
+   Compare the result against your own read from step 3. Inspect this file and see
+   if it matches your expectations from step 3.
 
 ### Group schema
 

@@ -42,22 +42,40 @@ may be classified as mechanical in isolation, but it is not selected for this ex
 
 1. Announce the selected finding id, category, evidence validation result, and target
    files before editing.
-2. For `mechanical`, make the smallest harness/tooling edit. Do not modify
+2. Decide whether each proposed harness change warrants an HDR before editing. A
+  mechanical path repair with one obvious outcome does not. A permission change,
+  new agent, blocking hook, policy choice, or responsibility move between harness
+  components does. Record that decision in the run report.
+3. For a change that warrants an HDR, capture the evidence, alternatives, rationale,
+  expected effect, consequences, and validation plan before making the edit. Write
+  the record from that captured context using `exercises/hdr-template.md`; never
+  reconstruct rationale from the final diff. Put HDRs under
+  `docs/harness-decisions/` with a stable `HDR-XXXX-*.md` name and add them to the
+  same branch and PR as the harness change.
+4. If the captured context does not establish a template field, write `[Not
+  established by the available evidence]` rather than inventing an explanation.
+5. For `mechanical`, make the smallest harness/tooling edit. Do not modify
    `analysis.json`, `groups.json`, or application source.
-3. Run the narrowest relevant verification first. For finding 1, run `npm install`
+6. Run the narrowest relevant verification first. For finding 1, run `npm install`
    only when dependencies are absent, then run `npm run build` from `todo-app/`.
-4. Review `git diff --check` and the focused diff. The commit message must include the
+7. Review `git diff --check` and the focused diff. The commit message must include the
    finding id and category, for example: `fix(harness): repair finding 1 build path`.
-5. Try to open a PR that names the finding id, evidence validation, category, and
-   verification. If `gh` authentication or push access is unavailable, retain the
-   local commit and write `PR_DESCRIPTION.md` with the same traceability instead.
-6. For `policy_decision` and `needs_investigation`, do not edit or commit. Report the
+8. Try to open a PR that names the finding id, evidence validation, category, HDR
+  decision, and verification. If `gh` authentication or push access is unavailable,
+  retain the local commit and write `PR_DESCRIPTION.md` with the same traceability
+  instead.
+9. For `policy_decision` and `needs_investigation`, do not edit or commit. Report the
    reason, the evidence that was checked, and the concrete human decision or next
    investigation needed.
+
+The agent must include the HDR decision and any HDR path in its PR body. For this
+exercise, the restricted agent and its blocking scope guard are meaningful changes
+and require an HDR even though the selected finding's `tsconfig` edit does not.
 
 ## Required report
 
 The final report must list every finding classified in the run and state one of:
-`implemented`, `escalated`, or `refused-stale`. For the implemented finding include
-changed files, verification output, commit id, and PR URL or the local PR description
-path. Explicitly state that findings not selected were left untouched.
+`implemented`, `escalated`, or `refused-stale`. For each proposed change include
+`HDR: warranted` or `HDR: not warranted` and the reason. For the implemented finding
+include changed files, verification output, commit id, and PR URL or the local PR
+description path. Explicitly state that findings not selected were left untouched.

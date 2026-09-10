@@ -72,10 +72,37 @@ The agent must include the HDR decision and any HDR path in its PR body. For thi
 exercise, the restricted agent and its blocking scope guard are meaningful changes
 and require an HDR even though the selected finding's `tsconfig` edit does not.
 
+## Pre-review validation
+
+Before presenting the PR to a human, run validation against the artifacts already
+produced by this flow. Do not start a new agent session or claim that validation proves
+future behavior. Scale the checks to the change: a mechanical path repair needs
+traceability, diff, and build checks; a new agent, tool, permission, or blocking hook
+also needs evidence-chain, scope, boundary, and HDR consistency checks.
+
+For every selected finding, write `docs/validation/validation-report.md` in the same
+branch and PR. Each check must include a `PASS`, `FAIL`, or `UNCERTAIN` result and name
+the artifact or command that supports it. At minimum check:
+
+- finding and evidence IDs resolve in `analysis.json` and `index.json`;
+- recommendation, changed files, and focused diff describe the same target;
+- the HDR, when warranted, agrees with the finding, proposal, and actual change;
+- changed tools and permissions match the responsibility they were introduced for;
+- the change stays within the intended scope and does not touch `todo-app/src/**`;
+- relevant executable checks pass, such as the scope-guard cases and `npm run build`.
+
+The report must list what could not be established, including future agent behavior,
+uncovered command/path variants, and anything requiring human judgment. A validation
+failure may correct a defect already covered by the existing decision. If correction
+requires a new policy or expands scope, stop and mark the PR `needs human decision`
+instead of starting another improvement cycle. Validation prepares evidence; it never
+approves, merges, or closes the PR.
+
 ## Required report
 
 The final report must list every finding classified in the run and state one of:
 `implemented`, `escalated`, or `refused-stale`. For each proposed change include
 `HDR: warranted` or `HDR: not warranted` and the reason. For the implemented finding
 include changed files, verification output, commit id, and PR URL or the local PR
-description path. Explicitly state that findings not selected were left untouched.
+description path. Include the validation-report path and final validation status.
+Explicitly state that findings not selected were left untouched.
